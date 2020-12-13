@@ -1,0 +1,14 @@
+*genvdoc.txt*
+
+==============================================================================
+LUA-MODULE                                                *genvdoc-LUA-MODULE*
+
+genvdoc.generate({plugin_name}, {opts})                   *genvdoc.generate()*
+  Generate a document.
+
+  Parameters: ~
+    {plugin_name} TODO
+    {opts} TODO
+
+==============================================================================
+vim:tw=78:ts=8:ft=help
