@@ -16,7 +16,11 @@ function Declaration.build(self, lines, width)
   local results = {}
   if self._declaration.type == "command" then
     local name = ":" .. self._declaration.name
-    title = Tag.add(name, width)
+    local str = name
+    if #self._declaration.params > 0 then
+      str = ("%s %s"):format(name, table.concat(self._declaration.params, " "))
+    end
+    title = Tag.add(str, width, name)
     vim.list_extend(results, lines)
   end
   if self._declaration.type == "method" then

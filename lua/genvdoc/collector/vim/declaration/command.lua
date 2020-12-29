@@ -9,9 +9,13 @@ function CommandParser.eat(_, tokens)
     return nil
   end
 
+  local params = {}
   for _, token in ipairs({unpack(tokens, 2)}) do
+    if token == "-nargs=?" then
+      table.insert(params, "[{arg}]")
+    end
     if not vim.startswith(token, "-") then
-      return {name = token, type = "command"}
+      return {name = token, type = "command", params = params}
     end
   end
 

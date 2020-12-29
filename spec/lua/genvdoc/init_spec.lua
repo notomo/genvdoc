@@ -11,6 +11,9 @@ describe("genvdoc", function()
 "" test command
 " echo `ok` message
 command! GenvdocTestCommand echo 'ok'
+
+"" test arg command
+command! -nargs=? GenvdocArgCommand echo 'ok'
 ]])
 
     helper.new_directory("lua")
@@ -78,6 +81,9 @@ COMMANDS                                                    *genvdoc-COMMANDS*
 :GenvdocTestCommand                                      *:GenvdocTestCommand*
   test command
   echo `ok` message
+
+:GenvdocArgCommand [{arg}]                                *:GenvdocArgCommand*
+  test arg command
 
 ==============================================================================
 Lua module: genvdoc                                          *genvdoc-genvdoc*
