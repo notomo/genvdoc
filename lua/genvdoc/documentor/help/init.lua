@@ -22,7 +22,7 @@ end
 
 function Document.build(self)
   local factors = {self:_header(), self:_body(), self._separator, self:_footer()}
-  return table.concat(factors, "\n")
+  return table.concat(factors, "\n") .. "\n"
 end
 
 function Document._header(self)

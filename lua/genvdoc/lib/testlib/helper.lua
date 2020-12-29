@@ -56,8 +56,10 @@ local asserts = vassert.asserts
 M.assert = vassert.assert
 
 asserts.create("content"):register_eq(function(file_path)
-  local expected = io.open(file_path, "r"):read("*a")
-  return "\n" .. expected .. "\n"
+  local f = io.open(file_path, "r")
+  local expected = f:read("*a")
+  f:close()
+  return "\n" .. expected
 end)
 
 return M
