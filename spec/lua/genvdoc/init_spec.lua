@@ -7,8 +7,6 @@ describe("genvdoc", function()
   after_each(helper.after_each)
 
   it("can generate a help document", function()
-    local output_dir = helper.test_data_dir
-
     helper.new_file("plugin.vim", [[
 "" test command
 " echo `ok` message
@@ -70,7 +68,7 @@ return M
       },
     })
 
-    local file_path = output_dir .. "genvdoc.txt"
+    local file_path = helper.test_data_dir .. "genvdoc.txt"
     assert.content(file_path, "\n" .. [[
 *genvdoc.txt*
 
@@ -102,5 +100,50 @@ other()                                                *genvdoc.other.other()*
 ==============================================================================
 vim:tw=78:ts=8:ft=help
 ]])
+  end)
+
+  it("can add examples to the doc", function()
+    helper.new_file("example.vim", [[
+nnoremap <Leader>h <Cmd>Genvdoc hoge<CR>
+nnoremap <Leader>f <Cmd>Genvdoc foo<CR>]])
+
+    genvdoc.generate("genvdoc", {
+      output_dir = helper.test_data_dir,
+      chapters = {
+        {
+          name = "EXAMPLES",
+          body = function()
+            local f = io.open("./example.vim", "r")
+            local lines = {}
+            for line in f:lines() do
+              if line == "" then
+                table.insert(lines, line)
+              else
+                table.insert(lines, ("  %s"):format(line))
+              end
+            end
+            f:close()
+            return (">\n%s\n<"):format(table.concat(lines, "\n"))
+          end,
+        },
+      },
+    })
+
+    local file_path = helper.test_data_dir .. "genvdoc.txt"
+    assert.content(file_path, "\n" .. [[
+*genvdoc.txt*
+
+==============================================================================
+EXAMPLES                                                    *genvdoc-EXAMPLES*
+
+>
+  nnoremap <Leader>h <Cmd>Genvdoc hoge<CR>
+  nnoremap <Leader>f <Cmd>Genvdoc foo<CR>
+<
+
+==============================================================================
+vim:tw=78:ts=8:ft=help
+]])
+
   end)
 end)

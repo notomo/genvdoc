@@ -7,14 +7,19 @@ local Chapter = {}
 Chapter.__index = Chapter
 M.Chapter = Chapter
 
-function Chapter.new(name, group_name, nodes)
-  local tbl = {_name = name, _group_name = group_name, _nodes = nodes}
+function Chapter.new(name, group_name, nodes, body)
+  local tbl = {_name = name, _group_name = group_name, _nodes = nodes, _body = body}
   return setmetatable(tbl, Chapter)
 end
 
 function Chapter.build(self, plugin_name, width)
   local tag = Tag.add(self._name, width, plugin_name .. "-" .. self._group_name)
   local lines = {tag, ""}
+  if self._body then
+    table.insert(lines, self._body())
+    return table.concat(lines, "\n")
+  end
+
   local last = #self._nodes
   for i, node in ipairs(self._nodes) do
     if node.declaration ~= nil then

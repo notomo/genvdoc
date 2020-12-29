@@ -24,18 +24,23 @@ function Documentor.generate(self, plugin_name, nodes)
   local chapters = {}
   for _, chapter in ipairs(self._chapters) do
     local groups = {}
-    for _, node in ipairs(nodes) do
-      local group = chapter.group(node)
-      if group == nil then
-        goto continue
+    if chapter.group ~= nil then
+      for _, node in ipairs(nodes) do
+        local group = chapter.group(node)
+        if group == nil then
+          goto continue
+        end
+        local group_nodes = groups[group] or {}
+        table.insert(group_nodes, node)
+        groups[group] = group_nodes
+        ::continue::
       end
-      local group_nodes = groups[group] or {}
-      table.insert(group_nodes, node)
-      groups[group] = group_nodes
-      ::continue::
     end
 
     local keys = vim.tbl_keys(groups)
+    if #keys == 0 then
+      table.insert(keys, chapter.name)
+    end
     table.sort(keys, function(a, b)
       return a < b
     end)
@@ -47,7 +52,7 @@ function Documentor.generate(self, plugin_name, nodes)
       else
         name = chapter.name
       end
-      table.insert(chapters, self._chapter.new(name, key, groups[key]))
+      table.insert(chapters, self._chapter.new(name, key, groups[key], chapter.body))
     end
   end
   return self._document.new(plugin_name, chapters)
