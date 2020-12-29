@@ -1,9 +1,9 @@
 *genvdoc.txt*
 
 ==============================================================================
-LUA-MODULE                                                *genvdoc-LUA-MODULE*
+Lua module: genvdoc                                          *genvdoc-genvdoc*
 
-genvdoc.generate({plugin_name}, {opts})                   *genvdoc.generate()*
+generate({plugin_name}, {opts})                           *genvdoc.generate()*
   Generate a document.
 
   Parameters: ~

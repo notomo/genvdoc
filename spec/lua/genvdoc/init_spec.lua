@@ -6,7 +6,7 @@ describe("genvdoc", function()
   before_each(helper.before_each)
   after_each(helper.after_each)
 
-  it("can generate a document", function()
+  it("can generate a help document", function()
     local output_dir = helper.test_data_dir
 
     helper.new_file("plugin.vim", [[
@@ -16,7 +16,8 @@ command! GenvdocTestCommand echo 'ok'
 ]])
 
     helper.new_directory("lua")
-    helper.new_file("lua/genvdoc.lua", [[
+    helper.new_directory("lua/genvdoc")
+    helper.new_file("lua/genvdoc/init.lua", [[
 local M = {}
 
 --- Inspect a tbl.
@@ -32,20 +33,38 @@ end
 
 return M
 ]])
+    helper.new_file("lua/genvdoc/other.lua", [[
+local M = {}
+
+--- Other.
+function M.other()
+  return
+end
+
+return M
+]])
 
     genvdoc.generate("genvdoc", {
       output_dir = helper.test_data_dir,
       chapters = {
         {
           name = "COMMANDS",
-          filter = function(node)
-            return node.declaration ~= nil and node.declaration.type == "command"
+          group = function(node)
+            if node.declaration == nil or node.declaration.type ~= "command" then
+              return nil
+            end
+            return "COMMANDS"
           end,
         },
         {
-          name = "LUA-MODULE",
-          filter = function(node)
-            return node.declaration ~= nil and node.declaration.module ~= nil
+          name = function(group)
+            return "Lua module: " .. group
+          end,
+          group = function(node)
+            if node.declaration == nil then
+              return nil
+            end
+            return node.declaration.module
           end,
         },
       },
@@ -63,16 +82,22 @@ COMMANDS                                                    *genvdoc-COMMANDS*
   echo `ok` message
 
 ==============================================================================
-LUA-MODULE                                                *genvdoc-LUA-MODULE*
+Lua module: genvdoc                                          *genvdoc-genvdoc*
 
-genvdoc.inspect({tbl})                                     *genvdoc.inspect()*
+inspect({tbl})                                             *genvdoc.inspect()*
   Inspect a tbl.
 
   Parameters: ~
     {tbl} a target table
 
-genvdoc.inspect2()                                        *genvdoc.inspect2()*
+inspect2()                                                *genvdoc.inspect2()*
   Inspect2.
+
+==============================================================================
+Lua module: genvdoc.other                              *genvdoc-genvdoc.other*
+
+other()                                                *genvdoc.other.other()*
+  Other.
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help

@@ -24,7 +24,7 @@ function Declaration.build(self, lines, width)
     local params = vim.tbl_map(function(param)
       return ("{%s}"):format(param)
     end, self._declaration.params)
-    local str = ("%s.%s(%s)"):format(self._declaration.module, self._declaration.name, table.concat(params, ", "))
+    local str = ("%s(%s)"):format(self._declaration.name, table.concat(params, ", "))
     title = Tag.add(str, width, name)
     vim.list_extend(results, lines)
     if #self._declaration.params > 0 then

@@ -7,13 +7,14 @@ local Chapter = {}
 Chapter.__index = Chapter
 M.Chapter = Chapter
 
-function Chapter.new(name, nodes)
-  local tbl = {_name = name, _nodes = nodes}
+function Chapter.new(name, group_name, nodes)
+  local tbl = {_name = name, _group_name = group_name, _nodes = nodes}
   return setmetatable(tbl, Chapter)
 end
 
 function Chapter.build(self, plugin_name, width)
-  local lines = {Tag.add(self._name, width, plugin_name .. "-" .. self._name), ""}
+  local tag = Tag.add(self._name, width, plugin_name .. "-" .. self._group_name)
+  local lines = {tag, ""}
   local last = #self._nodes
   for i, node in ipairs(self._nodes) do
     if node.declaration ~= nil then
