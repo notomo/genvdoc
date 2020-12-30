@@ -1,12 +1,13 @@
 local Path = require("genvdoc/lib/path").Path
+local Modules = require("genvdoc.collector.lua.module").Modules
 
 local M = {}
 
 local Parser = {}
 Parser.__index = Parser
 
-function Parser.new(lua_dir)
-  local tbl = {_lua_dir = lua_dir, _comment_parsing = false, _results = {}, _result = {}}
+function Parser.new(modules)
+  local tbl = {_modules = modules, _comment_parsing = false, _results = {}, _result = {}}
   return setmetatable(tbl, Parser)
 end
 
@@ -15,14 +16,7 @@ function Parser.parse(self, path)
   local str = f:read("*a")
   f:close()
 
-  local module_path
-  if Path.new(path):head() == "init.lua" then
-    module_path = Path.new(path):parent():trim_slash():get()
-  else
-    module_path = Path.new(path):without_ext()
-  end
-  local relative_path = self._lua_dir:relative(module_path)
-  local module_name = table.concat(vim.split(relative_path, "/", true), ".")
+  local module_name = self._modules:from_path(path)
 
   local bufnr = vim.api.nvim_create_buf(false, true)
   local lines = vim.split(str, "\n", true)
@@ -79,13 +73,14 @@ function Parser.parse(self, path)
 end
 
 function M.collect(self)
+  local modules = Modules.new(self.target_dir)
+
   local pattern = Path.new(self.target_dir):join("**/*.lua"):get()
   local paths = vim.fn.glob(pattern, true, true)
-  local lua_dir = Path.new(self.target_dir):join("lua/")
 
   local results = {}
   for _, path in ipairs(paths) do
-    vim.list_extend(results, Parser.new(lua_dir):parse(path))
+    vim.list_extend(results, Parser.new(modules):parse(path))
   end
   return results
 end
