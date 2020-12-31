@@ -49,7 +49,7 @@ end
 return M
 ]])
 
-    genvdoc.generate("genvdoc", {
+    local err = genvdoc.generate("genvdoc", {
       output_dir = helper.test_data_dir,
       chapters = {
         {
@@ -74,6 +74,7 @@ return M
         },
       },
     })
+    assert.is_nil(err)
 
     local file_path = helper.test_data_dir .. "genvdoc.txt"
     assert.content(file_path, "\n" .. [[
@@ -117,7 +118,7 @@ vim:tw=78:ts=8:ft=help
 nnoremap <Leader>h <Cmd>Genvdoc hoge<CR>
 nnoremap <Leader>f <Cmd>Genvdoc foo<CR>]])
 
-    genvdoc.generate("genvdoc", {
+    local err = genvdoc.generate("genvdoc", {
       output_dir = helper.test_data_dir,
       chapters = {
         {
@@ -138,6 +139,7 @@ nnoremap <Leader>f <Cmd>Genvdoc foo<CR>]])
         },
       },
     })
+    assert.is_nil(err)
 
     local file_path = helper.test_data_dir .. "genvdoc.txt"
     assert.content(file_path, "\n" .. [[
