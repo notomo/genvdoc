@@ -11,6 +11,8 @@ Processor.STAGE = {
   SEARCH_DECLARATION = "SEARCH_DECLARATION",
   PARSE_DECLARATION = "PARSE_DECLARATION",
 }
+Processor.FIRST_STAGE = Processor.STAGE.PARSE_COMMENT
+Processor.COMPLETE_STAGE = {Processor.STAGE.PARSE_DECLARATION}
 
 function Processor.new(modules, path)
   local query = vim.treesitter.parse_query("lua", [[
@@ -78,6 +80,12 @@ function Processor.parse_declaration(self, i, node)
   end
 end
 
+Processor.STAGES = {
+  [Processor.STAGE.PARSE_COMMENT] = Processor.parse_comment,
+  [Processor.STAGE.SEARCH_DECLARATION] = Processor.search_declaration,
+  [Processor.STAGE.PARSE_DECLARATION] = Processor.parse_declaration,
+}
+
 function M.collect(self)
   local all_nodes = {}
 
@@ -85,13 +93,8 @@ function M.collect(self)
   local paths = Path.new(self.target_dir):glob("**/*.lua")
   for _, path in ipairs(paths) do
     local processor = Processor.new(modules, path)
-    local stages = {
-      [processor.STAGE.PARSE_COMMENT] = processor.parse_comment,
-      [processor.STAGE.SEARCH_DECLARATION] = processor.search_declaration,
-      [processor.STAGE.PARSE_DECLARATION] = processor.parse_declaration,
-    }
     local iter = processor:iter()
-    local nodes = Parser.new(processor.STAGE.PARSE_COMMENT, {processor.STAGE.PARSE_DECLARATION}, processor, stages, iter):parse()
+    local nodes = Parser.new(processor, iter):parse()
     vim.list_extend(all_nodes, nodes)
   end
 

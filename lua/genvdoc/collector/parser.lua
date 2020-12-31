@@ -36,13 +36,9 @@ end
 local State = {}
 State.__index = State
 
-function State.new(stage_name, processor, stages)
-  vim.validate({
-    stage_name = {stage_name, "string"},
-    processor = {processor, "table"},
-    stages = {stages, "table"},
-  })
-  local tbl = {stage_name = stage_name, _processor = processor, _stages = stages}
+function State.new(stage_name, processor)
+  vim.validate({stage_name = {stage_name, "string"}, processor = {processor, "table"}})
+  local tbl = {stage_name = stage_name, _processor = processor}
   return setmetatable(tbl, State)
 end
 
@@ -55,53 +51,48 @@ function State.changed(self, stage_name)
 end
 
 function State.process(self, values)
-  local f = self._stages[self.stage_name]
+  local f = self._processor.STAGES[self.stage_name]
   return f(self._processor, unpack(values))
 end
 
 function State.transition(self, stage_name)
   vim.validate({stage_name = {stage_name, "string"}})
-  return self.new(stage_name, self._processor, self._stages)
+  return self.new(stage_name, self._processor)
 end
 
 local Parser = {}
 Parser.__index = Parser
 M.Parser = Parser
 
-function Parser.new(first_stage_name, completed_stage_names, processor, stages, iter)
-  vim.validate({
-    first_stage_name = {first_stage_name, "string"},
-    completed_stage_names = {completed_stage_names, "table"},
-    processor = {processor, "table"},
-    stages = {stages, "table"},
-    iter = {iter, "function"},
-  })
-  local state = State.new(first_stage_name, processor, stages)
+function Parser.new(processor, iter)
+  vim.validate({processor = {processor, "table"}, iter = {iter, "function"}})
+  local state = State.new(processor.FIRST_STAGE, processor)
   local tbl = {
     _state = state,
     _iter = iter,
-    _first_stage = first_stage_name,
-    _completed_stage_names = completed_stage_names,
+    _first_stage = processor.FIRST_STAGE,
+    _completed_stage_names = processor.COMPLETE_STAGE,
   }
   return setmetatable(tbl, Parser)
 end
 
 function Parser.parse(self)
-  local node = Result.new()
   local nodes = {}
-  local values = {}
-  local stop_iter = false
+
+  local node = Result.new()
+  local iter_values = {}
+  local skip_iter = false
   while true do
-    if not stop_iter then
-      values = {self._iter()}
+    if not skip_iter then
+      iter_values = {self._iter()}
     end
 
-    if values[1] == nil then
+    if iter_values[1] == nil then
       break
     end
 
-    local result, next_stage, stop = self._state:process(values)
-    stop_iter = stop
+    local result, next_stage, skip = self._state:process(iter_values)
+    skip_iter = skip
     node:merge(result)
     if not self._state:changed(next_stage) then
       goto continue
