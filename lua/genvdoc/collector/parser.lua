@@ -1,14 +1,15 @@
 local M = {}
 
-local ParseResult = {}
-ParseResult.__index = ParseResult
+local Result = {}
+Result.__index = Result
 
-function ParseResult.new()
+function Result.new()
   local tbl = {lines = {}, declaration = nil}
-  return setmetatable(tbl, ParseResult)
+  return setmetatable(tbl, Result)
 end
 
-function ParseResult.merge(self, result)
+function Result.merge(self, result)
+  vim.validate({result = {result, "table", true}})
   if result == nil then
     return
   end
@@ -20,16 +21,20 @@ function ParseResult.merge(self, result)
   end
 end
 
-local ParseState = {}
-ParseState.__index = ParseState
+local State = {}
+State.__index = State
 
-function ParseState.new(stage_name, stages)
-  vim.validate({stage_name = {stage_name, "string"}, stages = {stages, "table"}})
-  local tbl = {_stage_name = stage_name, _stages = stages}
-  return setmetatable(tbl, ParseState)
+function State.new(stage_name, processor, stages)
+  vim.validate({
+    stage_name = {stage_name, "string"},
+    processor = {processor, "table"},
+    stages = {stages, "table"},
+  })
+  local tbl = {_stage_name = stage_name, _processor = processor, _stages = stages}
+  return setmetatable(tbl, State)
 end
 
-function ParseState.changed(self, stage_name)
+function State.changed(self, stage_name)
   vim.validate({stage_name = {stage_name, "string", true}})
   if stage_name == nil then
     return false
@@ -37,36 +42,42 @@ function ParseState.changed(self, stage_name)
   return self._stage_name ~= stage_name
 end
 
-function ParseState.process(self, value)
+function State.process(self, values)
   local f = self._stages[self._stage_name]
-  return f(value)
+  return f(self._processor, unpack(values))
 end
 
-function ParseState.transition(self, stage_name)
+function State.transition(self, stage_name)
   vim.validate({stage_name = {stage_name, "string"}})
-  return self.new(stage_name, self._stages)
+  return self.new(stage_name, self._processor, self._stages)
 end
 
 local Parser = {}
 Parser.__index = Parser
 M.Parser = Parser
 
-function Parser.new(stage_name, stages, iter)
+function Parser.new(stage_name, processor, stages, iter)
   vim.validate({
     stage_name = {stage_name, "string"},
+    processor = {processor, "table"},
     stages = {stages, "table"},
     iter = {iter, "function"},
   })
-  local state = ParseState.new(stage_name, stages)
+  local state = State.new(stage_name, processor, stages)
   local tbl = {_state = state, _iter = iter, _first_stage = stage_name}
   return setmetatable(tbl, Parser)
 end
 
 function Parser.parse(self)
-  local node = ParseResult.new()
+  local node = Result.new()
   local nodes = {}
-  for value in self._iter do
-    local result, next_stage = self._state:process(value)
+  while true do
+    local values = {self._iter()}
+    if values[1] == nil then
+      break
+    end
+
+    local result, next_stage = self._state:process(values)
     node:merge(result)
     if not self._state:changed(next_stage) then
       goto continue
@@ -75,7 +86,7 @@ function Parser.parse(self)
     local state = self._state:transition(next_stage)
     if next_stage == self._first_stage then
       table.insert(nodes, node)
-      node = ParseResult.new()
+      node = Result.new()
     end
     self._state = state
 
