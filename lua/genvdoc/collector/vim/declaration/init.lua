@@ -11,10 +11,10 @@ function DeclarationParser.new()
   return setmetatable(tbl, DeclarationParser)
 end
 
-function DeclarationParser.eat(self, line)
+function DeclarationParser.parse(self, line)
   local tokens = vim.split(line, "%s+")
   for _, parser in ipairs(self._parsers) do
-    local declaration = parser:eat(tokens)
+    local declaration = parser:parse(tokens)
     if declaration ~= nil then
       return declaration
     end

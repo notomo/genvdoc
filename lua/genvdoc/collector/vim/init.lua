@@ -20,18 +20,18 @@ function Processor.search(self, line)
   end
 
   local comment = line:sub(e + 1)
-  return {line = comment}, self.STAGE.PARSE
+  return {lines = comment}, self.STAGE.PARSE
 end
 
 function Processor.parse(self, line)
   local s, e = line:find([[^%s*"%s?]])
   if s == nil then
-    local declaration = DeclarationParser.new():eat(line)
+    local declaration = DeclarationParser.new():parse(line)
     return {declaration = declaration}, self.STAGE.SEARCH
   end
 
   local comment = line:sub(e + 1)
-  return {line = comment}
+  return {lines = comment}
 end
 
 function M.collect(self)
@@ -46,7 +46,7 @@ function M.collect(self)
   local paths = Path.new(self.target_dir):glob("**/*.vim")
   for _, path in ipairs(paths) do
     local iter = Path.new(path):iter_lines()
-    local nodes = Parser.new(processor.STAGE.SEARCH, processor, stages, iter):parse()
+    local nodes = Parser.new(processor.STAGE.SEARCH, {}, processor, stages, iter):parse()
     vim.list_extend(all_nodes, nodes)
   end
 

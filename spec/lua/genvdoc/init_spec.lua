@@ -32,6 +32,10 @@ function M.inspect2()
   return vim.inspect()
 end
 
+function M.inspect3()
+  return vim.inspect()
+end
+
 return M
 ]])
     helper.new_file("lua/genvdoc/other.lua", [[

@@ -4,7 +4,7 @@ local CommandParser = {}
 CommandParser.__index = CommandParser
 M.CommandParser = CommandParser
 
-function CommandParser.eat(_, tokens)
+function CommandParser.parse(_, tokens)
   if not vim.startswith(tokens[1], "com") then
     return nil
   end

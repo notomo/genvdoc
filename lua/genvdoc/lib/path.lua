@@ -116,6 +116,13 @@ function Path.iter_lines(self)
   end
 end
 
+function Path.read_lines(self)
+  local f = io.open(self.path, "r")
+  local str = f:read("*a")
+  f:close()
+  return vim.split(str, "\n", true)
+end
+
 function Path.relative(self, path)
   local pattern = "^" .. M.adjust_sep(self.path):gsub("([^%w])", "%%%1")
   return M.adjust_sep(path):gsub(pattern, "", 1)

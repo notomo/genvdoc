@@ -1,86 +1,101 @@
 local Path = require("genvdoc/lib/path").Path
+local Parser = require("genvdoc.collector.parser").Parser
 local Modules = require("genvdoc.collector.lua.module").Modules
 
 local M = {}
 
-local Parser = {}
-Parser.__index = Parser
+local Processor = {}
+Processor.__index = Processor
+Processor.STAGE = {
+  PARSE_COMMENT = "PARSE_COMMENT",
+  SEARCH_DECLARATION = "SEARCH_DECLARATION",
+  PARSE_DECLARATION = "PARSE_DECLARATION",
+}
 
-function Parser.new(modules)
-  local tbl = {_modules = modules, _comment_parsing = false, _results = {}, _result = {}}
-  return setmetatable(tbl, Parser)
-end
-
-function Parser.parse(self, path)
-  local f = io.open(path, "r")
-  local str = f:read("*a")
-  f:close()
-
-  local module_name = self._modules:from_path(path)
-
-  local bufnr = vim.api.nvim_create_buf(false, true)
-  local lines = vim.split(str, "\n", true)
-  vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
-  local parser = vim.treesitter.get_parser(bufnr, "lua")
-  local trees, _ = parser:parse()
+function Processor.new(modules, path)
   local query = vim.treesitter.parse_query("lua", [[
 ((comment) @comment (match? @comment "^---"))
 (function
   (function_name (function_name_field (property_identifier) @method))
   (parameters (identifier) @param)?
 )
-  ]])
+]])
+  local tbl = {
+    _module_name = modules:from_path(path),
+    _query = query,
+    _lines = Path.new(path):read_lines(),
+  }
+  return setmetatable(tbl, Processor)
+end
 
-  local ok, result = pcall(function()
-    return {query:iter_captures(trees[1]:root(), bufnr, 0, -1)}
-  end)
-  if not ok then
-    vim.api.nvim_err_writeln(result .. "\n")
-    return {}
+function Processor._matched(self, i, node)
+  local row, start_col, _, end_col = unpack({node:range()})
+  return self._query.captures[i], self._lines[row + 1]:sub(start_col + 1, end_col)
+end
+
+function Processor.iter(self)
+  local bufnr = vim.api.nvim_create_buf(false, true)
+  vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, self._lines)
+  local parser = vim.treesitter.get_parser(bufnr, "lua")
+  local trees, _ = parser:parse()
+  return self._query:iter_captures(trees[1]:root(), bufnr, 0, -1)
+end
+
+function Processor._parse_comment(_, text)
+  local _, e = text:find([[^%s*%-%-%-%s?]])
+  return text:sub(e + 1)
+end
+
+function Processor.parse_comment(self, i, node)
+  local name, text = self:_matched(i, node)
+  if name == "comment" then
+    local comment = self:_parse_comment(text)
+    return {lines = comment}, self.STAGE.SEARCH_DECLARATION
   end
+end
 
-  for i, node in unpack(result) do
-    local name = query.captures[i]
-    if not self._comment_parsing and name == "comment" then
-      self._comment_parsing = true
-      self._result = {
-        lines = {},
-        declaration = {param_lines = {}, params = {}, module = module_name},
-      }
-      table.insert(self._results, self._result)
-    end
-
-    local row, start_col, _, end_col = unpack({node:range()})
-    local text = lines[row + 1]:sub(start_col + 1, end_col)
-    if self._comment_parsing and name == "method" then
-      self._result.declaration.name = text
-      self._result.declaration.type = "method"
-      self._comment_parsing = false
-    elseif not self._comment_parsing and self._result.declaration ~= nil and name == "param" then
-      table.insert(self._result.declaration.params, text)
-    elseif name == "comment" then
-      local _, e = text:find([[^%s*%-%-%-%s?]])
-      local comment = text:sub(e + 1)
-      if vim.startswith(comment, "@param ") then
-        local _, pe = comment:find([[^@param%s+]])
-        table.insert(self._result.declaration.param_lines, comment:sub(pe + 1))
-      else
-        table.insert(self._result.lines, comment)
-      end
+function Processor.search_declaration(self, i, node)
+  local name, text = self:_matched(i, node)
+  if name == "method" then
+    return {declaration = {name = text, type = "method", module = self._module_name}}, self.STAGE.PARSE_DECLARATION
+  elseif name == "comment" then
+    local comment = self:_parse_comment(text)
+    if vim.startswith(comment, "@param ") then
+      local _, e = comment:find([[^@param%s+]])
+      return {declaration = {param_lines = comment:sub(e + 1)}}
+    else
+      return {lines = comment}
     end
   end
-  return self._results
+end
+
+function Processor.parse_declaration(self, i, node)
+  local name, text = self:_matched(i, node)
+  if name == "param" then
+    return {declaration = {params = text}}
+  elseif name == "comment" then
+    return nil, self.STAGE.PARSE_COMMENT, true
+  end
 end
 
 function M.collect(self)
-  local modules = Modules.new(self.target_dir)
+  local all_nodes = {}
 
-  local results = {}
+  local modules = Modules.new(self.target_dir)
   local paths = Path.new(self.target_dir):glob("**/*.lua")
   for _, path in ipairs(paths) do
-    vim.list_extend(results, Parser.new(modules):parse(path))
+    local processor = Processor.new(modules, path)
+    local stages = {
+      [processor.STAGE.PARSE_COMMENT] = processor.parse_comment,
+      [processor.STAGE.SEARCH_DECLARATION] = processor.search_declaration,
+      [processor.STAGE.PARSE_DECLARATION] = processor.parse_declaration,
+    }
+    local iter = processor:iter()
+    local nodes = Parser.new(processor.STAGE.PARSE_COMMENT, {processor.STAGE.PARSE_DECLARATION}, processor, stages, iter):parse()
+    vim.list_extend(all_nodes, nodes)
   end
-  return results
+
+  return all_nodes
 end
 
 return M
