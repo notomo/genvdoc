@@ -75,10 +75,8 @@ end
 function M.collect(self)
   local modules = Modules.new(self.target_dir)
 
-  local pattern = Path.new(self.target_dir):join("**/*.lua"):get()
-  local paths = vim.fn.glob(pattern, true, true)
-
   local results = {}
+  local paths = Path.new(self.target_dir):glob("**/*.lua")
   for _, path in ipairs(paths) do
     vim.list_extend(results, Parser.new(modules):parse(path))
   end

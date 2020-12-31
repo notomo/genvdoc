@@ -1,48 +1,44 @@
 local Path = require("genvdoc/lib/path").Path
+local Parser = require("genvdoc/collector/vim/parser").Parser
 local DeclarationParser = require("genvdoc/collector/vim/declaration").DeclarationParser
-local CommentParser = require("genvdoc/collector/vim/comment").CommentParser
 
 local M = {}
 
-local Parser = {}
-Parser.__index = Parser
+local STAGE = {SEARCH = "SEARCH", PARSE = "PARSE"}
 
-function Parser.new()
-  local tbl = {results = {}, _comment_parser = nil, _declaration_parser = DeclarationParser.new()}
-  return setmetatable(tbl, Parser)
+local search = function(line)
+  local s, e = line:find([[^%s*""%s?]])
+  if s == nil then
+    return nil
+  end
+
+  local comment = line:sub(e + 1)
+  return {line = comment}, STAGE.PARSE
 end
 
-function Parser.eat(self, line)
-  if self._comment_parser == nil then
-    local comment_parser, ok = CommentParser.search_head(line)
-    if ok then
-      self._comment_parser = comment_parser
-    end
-    return
+local parse = function(line)
+  local s, e = line:find([[^%s*"%s?]])
+  if s == nil then
+    local declaration = DeclarationParser.new():eat(line)
+    return {declaration = declaration}, STAGE.SEARCH
   end
 
-  if not self._comment_parser:eat(line) then
-    local declaration = self._declaration_parser:eat(line)
-    table.insert(self.results, {lines = self._comment_parser.comments, declaration = declaration})
-    self._comment_parser = nil
-  end
+  local comment = line:sub(e + 1)
+  return {line = comment}
 end
 
 function M.collect(self)
-  local pattern = Path.new(self.target_dir):join("**/*.vim"):get()
-  local paths = vim.fn.glob(pattern, true, true)
+  local all_nodes = {}
+  local stages = {SEARCH = search, PARSE = parse}
 
-  local results = {}
+  local paths = Path.new(self.target_dir):glob("**/*.vim")
   for _, path in ipairs(paths) do
-    local f = io.open(path, "r")
-    local parser = Parser.new()
-    for line in f:lines() do
-      parser:eat(line)
-    end
-    f:close()
-    vim.list_extend(results, parser.results)
+    local iter = Path.new(path):iter_lines()
+    local nodes = Parser.new(STAGE.SEARCH, stages, iter):parse()
+    vim.list_extend(all_nodes, nodes)
   end
-  return results
+
+  return all_nodes
 end
 
 return M

@@ -8,7 +8,13 @@ Chapter.__index = Chapter
 M.Chapter = Chapter
 
 function Chapter.new(name, group_name, nodes, body)
-  local tbl = {_name = name, _group_name = group_name, _nodes = nodes, _body = body}
+  vim.validate({
+    name = {name, "string"},
+    group_name = {group_name, "string"},
+    nodes = {nodes, "table", true},
+    body = {body, "function", true},
+  })
+  local tbl = {_name = name, _group_name = group_name, _nodes = nodes or {}, _body = body}
   return setmetatable(tbl, Chapter)
 end
 

@@ -104,6 +104,18 @@ function Path.write(self, content)
   f:close()
 end
 
+function Path.iter_lines(self)
+  local f = io.open(self.path, "r")
+  local get = f:lines()
+  return function()
+    local line = get()
+    if line ~= nil then
+      return line
+    end
+    f:close()
+  end
+end
+
 function Path.relative(self, path)
   local pattern = "^" .. M.adjust_sep(self.path):gsub("([^%w])", "%%%1")
   return M.adjust_sep(path):gsub(pattern, "", 1)
@@ -111,6 +123,11 @@ end
 
 function Path.without_ext(self)
   return vim.fn.fnamemodify(self.path, ":r")
+end
+
+function Path.glob(self, pattern)
+  local full_pattern = self:join(pattern):get()
+  return vim.fn.glob(full_pattern, true, true)
 end
 
 return M
