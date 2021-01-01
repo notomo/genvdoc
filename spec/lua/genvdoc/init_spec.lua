@@ -124,6 +124,7 @@ nnoremap <Leader>f <Cmd>Genvdoc foo<CR>]])
         {
           name = "EXAMPLES",
           body = function()
+            print("hogehoge")
             local f = io.open("./example.vim", "r")
             local lines = {}
             for line in f:lines() do

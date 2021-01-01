@@ -1,61 +1,49 @@
+local ChapterSetting = require("genvdoc.documentor.chapter").ChapterSetting
+local modulelib = require("genvdoc.lib.module")
+
 local M = {}
 
 local Documentor = {}
 Documentor.__index = Documentor
 M.Documentor = Documentor
 
-function Documentor.new(document_type, chapters)
+function Documentor.new(document_type, settings)
   vim.validate({
     document_type = {document_type, "string", true},
-    chapters = {chapters, "table", true},
+    settings = {settings, "table", true},
   })
+
   document_type = document_type or "help"
-  chapters = chapters or {}
+  settings = settings or {}
+
+  local document_module, d_err = modulelib.find("genvdoc/documentor/" .. document_type)
+  if d_err ~= nil then
+    return nil, d_err
+  end
+
+  local chapter_module, c_err = modulelib.find("genvdoc/documentor/" .. document_type .. "/chapter")
+  if c_err ~= nil then
+    return nil, c_err
+  end
+
   local tbl = {
-    _document = require("genvdoc/documentor/" .. document_type).Document,
-    _chapter = require("genvdoc/documentor/" .. document_type .. "/chapter").Chapter,
-    _chapters = chapters,
+    _document_cls = document_module.Document,
+    _chapter_cls = chapter_module.Chapter,
+    _settings = settings,
   }
   return setmetatable(tbl, Documentor)
 end
 
 function Documentor.generate(self, plugin_name, nodes)
   vim.validate({plugin_name = {plugin_name, "string"}, nodes = {nodes, "table"}})
-  local chapters = {}
-  for _, chapter in ipairs(self._chapters) do
-    local groups = {}
-    if chapter.group ~= nil then
-      for _, node in ipairs(nodes) do
-        local group = chapter.group(node)
-        if group == nil then
-          goto continue
-        end
-        local group_nodes = groups[group] or {}
-        table.insert(group_nodes, node)
-        groups[group] = group_nodes
-        ::continue::
-      end
-    end
 
-    local keys = vim.tbl_keys(groups)
-    if #keys == 0 then
-      table.insert(keys, chapter.name)
-    end
-    table.sort(keys, function(a, b)
-      return a < b
-    end)
-
-    for _, key in ipairs(keys) do
-      local name
-      if type(chapter.name) == "function" then
-        name = chapter.name(key)
-      else
-        name = chapter.name
-      end
-      table.insert(chapters, self._chapter.new(name, key, groups[key], chapter.body))
-    end
+  local all_chapters = {}
+  for _, setting in ipairs(self._settings) do
+    local chapters = ChapterSetting.new(self._chapter_cls, setting):group(nodes)
+    vim.list_extend(all_chapters, chapters)
   end
-  return self._document.new(plugin_name, chapters)
+
+  return self._document_cls.new(plugin_name, all_chapters)
 end
 
 return M
