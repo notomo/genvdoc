@@ -32,7 +32,13 @@ function M.inspect2()
   return vim.inspect()
 end
 
-function M.inspect3()
+function M.inspect3(_param)
+  return vim.inspect()
+end
+
+--- Inspect4.
+--- @param a target table
+function M.inspect4(tbl)
   return vim.inspect()
 end
 
@@ -102,6 +108,12 @@ inspect({tbl})                                             *genvdoc.inspect()*
 inspect2()                                                *genvdoc.inspect2()*
   Inspect2.
 
+inspect4({tbl})                                           *genvdoc.inspect4()*
+  Inspect4.
+
+  Parameters: ~
+    {tbl} a target table
+
 ==============================================================================
 Lua module: genvdoc.other                              *genvdoc-genvdoc.other*
 
@@ -124,7 +136,6 @@ nnoremap <Leader>f <Cmd>Genvdoc foo<CR>]])
         {
           name = "EXAMPLES",
           body = function()
-            print("hogehoge")
             local f = io.open("./example.vim", "r")
             local lines = {}
             for line in f:lines() do
@@ -140,6 +151,7 @@ nnoremap <Leader>f <Cmd>Genvdoc foo<CR>]])
         },
       },
     })
+
     assert.is_nil(err)
 
     local file_path = helper.test_data_dir .. "genvdoc.txt"

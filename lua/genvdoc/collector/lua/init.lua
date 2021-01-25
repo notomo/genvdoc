@@ -26,12 +26,16 @@ function Processor.new(modules, path)
     _module_name = modules:from_path(path),
     _query = query,
     _lines = Path.new(path):read_lines(),
+    _row = nil,
+    _joined = true,
   }
   return setmetatable(tbl, Processor)
 end
 
 function Processor._matched(self, i, node)
   local row, start_col, _, end_col = unpack({node:range()})
+  self._joined = self._row == nil or (self._joined and (row == self._row or row - 1 == self._row))
+  self._row = row
   return self._query.captures[i], self._lines[row + 1]:sub(start_col + 1, end_col)
 end
 
@@ -73,9 +77,10 @@ end
 
 function Processor.parse_declaration(self, i, node)
   local name, text = self:_matched(i, node)
-  if name == "param" then
+  if name == "param" and self._joined then
     return {declaration = {params = text}}
   elseif name == "comment" then
+    self._joined = true
     return nil, self.STAGE.PARSE_COMMENT, true
   end
 end
