@@ -22,7 +22,7 @@ command! -nargs=? GenvdocArgCommand echo 'ok'
 local M = {}
 
 --- Inspect a tbl.
---- @param a target table
+--- @param tbl table: a target table
 function M.inspect(tbl)
   return vim.inspect(tbl)
 end
@@ -37,7 +37,7 @@ function M.inspect3(_param)
 end
 
 --- Inspect4.
---- @param a target table
+--- @param tbl table: a target table
 function M.inspect4(tbl)
   return vim.inspect()
 end
@@ -103,7 +103,7 @@ inspect({tbl})                                             *genvdoc.inspect()*
   Inspect a tbl.
 
   Parameters: ~
-    {tbl} a target table
+    {tbl} (table) a target table
 
 inspect2()                                                *genvdoc.inspect2()*
   Inspect2.
@@ -112,7 +112,7 @@ inspect4({tbl})                                           *genvdoc.inspect4()*
   Inspect4.
 
   Parameters: ~
-    {tbl} a target table
+    {tbl} (table) a target table
 
 ==============================================================================
 Lua module: genvdoc.other                              *genvdoc-genvdoc.other*
