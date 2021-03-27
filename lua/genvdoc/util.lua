@@ -2,16 +2,26 @@ local M = {}
 
 function M.help_code_block_from_file(file_path)
   local f = io.open(file_path, "r")
-  local lines = {}
+  local strs = {}
   for line in f:lines() do
-    if line == "" then
-      table.insert(lines, line)
-    else
-      table.insert(lines, ("  %s"):format(line))
-    end
+    table.insert(strs, line)
   end
   f:close()
-  return (">\n%s\n<"):format(table.concat(lines, "\n"))
+  local indented = M.indent(table.concat(strs, "\n"), 2)
+  return (">\n%s\n<"):format(indented)
+end
+
+function M.indent(strs, count)
+  local indent = (" "):rep(count)
+  local lines = {}
+  for _, str in ipairs(vim.split(strs, "\n", true)) do
+    if str == "" then
+      table.insert(lines, str)
+    else
+      table.insert(lines, ("%s%s"):format(indent, str))
+    end
+  end
+  return table.concat(lines, "\n")
 end
 
 return M

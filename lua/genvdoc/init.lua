@@ -4,8 +4,22 @@ local Documentor = require("genvdoc/documentor").Documentor
 
 local M = {}
 
---- Generate a document.
+---Generate a document.
+---@param plugin_name string
+---@param opts table
 function M.generate(plugin_name, opts)
+  local f = function()
+    return M._generate(plugin_name, opts)
+  end
+
+  local ok, result = xpcall(f, debug.traceback)
+  if not ok then
+    error(result)
+  end
+  return result
+end
+
+function M._generate(plugin_name, opts)
   local collector, c_err = Collector.new(opts.sources)
   if c_err ~= nil then
     return c_err

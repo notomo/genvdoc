@@ -38,7 +38,7 @@ function Declaration.build(self, lines, width)
     for i, param in ipairs(self._declaration.params) do
       local comment = self._declaration.param_lines[i] or "TODO"
       local factors = vim.split(comment, "%s+")
-      local typ = factors[2]:gsub(":", "")
+      local typ = (factors[2] or "TODO"):gsub(":", "")
       local desc = table.concat(vim.list_slice(factors, 3), " ")
       local line = ("  {%s} (%s) %s"):format(param, typ, desc)
       table.insert(results, line)
