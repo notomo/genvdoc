@@ -59,12 +59,12 @@ return M
       output_dir = helper.test_data_dir,
       chapters = {
         {
-          name = "COMMANDS",
+          name = "TEST COMMANDS",
           group = function(node)
             if node.declaration == nil or node.declaration.type ~= "command" then
               return nil
             end
-            return "COMMANDS"
+            return "TEST COMMANDS"
           end,
         },
         {
@@ -87,7 +87,7 @@ return M
 *genvdoc.txt*
 
 ==============================================================================
-COMMANDS                                                    *genvdoc-COMMANDS*
+TEST COMMANDS                                          *genvdoc-TEST-COMMANDS*
 
 :GenvdocTestCommand                                      *:GenvdocTestCommand*
   test command

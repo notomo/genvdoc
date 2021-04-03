@@ -10,7 +10,7 @@ end
 
 function Tag.add(str, width, name)
   local tag_str = name or str
-  local tag = Tag.new(tag_str)
+  local tag = Tag.new(tag_str:gsub("%s+", "-"))
   local spaces = (" "):rep(width - #tag - #str)
   return str .. spaces .. tag
 end
