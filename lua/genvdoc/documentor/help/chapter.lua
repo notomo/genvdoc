@@ -22,7 +22,7 @@ function Chapter.build(self, plugin_name, width)
   local tag = Tag.add(self._name, width, plugin_name .. "-" .. self._group_name)
   local lines = {tag, ""}
   if self._body then
-    table.insert(lines, self._body())
+    table.insert(lines, self._body({width = width}))
     return table.concat(lines, "\n")
   end
 

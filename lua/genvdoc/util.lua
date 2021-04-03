@@ -24,4 +24,8 @@ function M.indent(strs, count)
   return table.concat(lines, "\n")
 end
 
+function M.help_tagged(ctx, name, tag_name)
+  return require("genvdoc.documentor.help.tag").Tag.add(name, ctx.width, tag_name) .. "\n"
+end
+
 return M
