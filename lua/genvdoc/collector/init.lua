@@ -25,7 +25,7 @@ M.Collector = Collector
 
 function Collector.new(settings)
   vim.validate({settings = {settings, "table", true}})
-  settings = settings or {{name = "vim"}, {name = "lua"}}
+  settings = settings or {{name = "lua"}}
 
   local sources = {}
   for _, setting in ipairs(settings) do

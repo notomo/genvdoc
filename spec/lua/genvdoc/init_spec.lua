@@ -7,15 +7,6 @@ describe("genvdoc", function()
   after_each(helper.after_each)
 
   it("can generate a help document", function()
-    helper.new_file("plugin.vim", [[
-"" test command
-" echo `ok` message
-command! GenvdocTestCommand echo 'ok'
-
-"" test arg command
-command! -nargs=? GenvdocArgCommand echo 'ok'
-]])
-
     helper.new_directory("lua")
     helper.new_directory("lua/genvdoc")
     helper.new_file("lua/genvdoc/init.lua", [[
@@ -59,15 +50,6 @@ return M
       output_dir = helper.test_data_dir,
       chapters = {
         {
-          name = "TEST COMMANDS",
-          group = function(node)
-            if node.declaration == nil or node.declaration.type ~= "command" then
-              return nil
-            end
-            return "TEST COMMANDS"
-          end,
-        },
-        {
           name = function(group)
             return "Lua module: " .. group
           end,
@@ -85,16 +67,6 @@ return M
     local file_path = helper.test_data_dir .. "genvdoc.txt"
     assert.content(file_path, "\n" .. [[
 *genvdoc.txt*
-
-==============================================================================
-TEST COMMANDS                                          *genvdoc-TEST-COMMANDS*
-
-:GenvdocTestCommand                                      *:GenvdocTestCommand*
-  test command
-  echo `ok` message
-
-:GenvdocArgCommand [{arg}]                                *:GenvdocArgCommand*
-  test arg command
 
 ==============================================================================
 Lua module: genvdoc                                          *genvdoc-genvdoc*
