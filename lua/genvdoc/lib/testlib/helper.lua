@@ -1,41 +1,28 @@
-local M = {}
+local plugin_name = vim.split((...):gsub("%.", "/"), "/", true)[1]
+local M = require("vusted.helper")
 
-local root, err = require("genvdoc/lib/path").find_root("genvdoc/*.lua")
-if err ~= nil then
-  error(err)
-end
-M.root = root
+M.root = M.find_plugin_root(plugin_name)
 M.test_data_path = "spec/test_data/"
 M.test_data_dir = M.root .. "/" .. M.test_data_path
 
-M.command = function(cmd)
-  local _, cmderr = pcall(vim.api.nvim_command, cmd)
-  if cmderr then
-    local info = debug.getinfo(2)
-    local pos = ("%s:%d"):format(info.source, info.currentline)
-    local msg = ("on %s: failed excmd `%s`\n%s"):format(pos, cmd, cmderr)
-    error(msg)
-  end
-end
-
-M.before_each = function()
+function M.before_each()
   M.new_directory("")
   vim.api.nvim_set_current_dir(M.test_data_dir)
 end
 
-M.after_each = function()
-  M.command("tabedit")
-  M.command("tabonly!")
-  M.command("silent! %bwipeout!")
+function M.after_each()
+  vim.cmd("tabedit")
+  vim.cmd("tabonly!")
+  vim.cmd("silent! %bwipeout!")
   print(" ")
 
   vim.api.nvim_set_current_dir(M.root)
 
-  require("genvdoc/lib/cleanup")()
+  M.cleanup_loaded_modules(plugin_name)
   M.delete("")
 end
 
-M.new_file = function(path, ...)
+function M.new_file(path, ...)
   local f = io.open(M.test_data_dir .. path, "w")
   for _, line in ipairs({...}) do
     f:write(line .. "\n")
@@ -43,17 +30,15 @@ M.new_file = function(path, ...)
   f:close()
 end
 
-M.new_directory = function(path)
+function M.new_directory(path)
   vim.fn.mkdir(M.test_data_dir .. path, "p")
 end
 
-M.delete = function(path)
+function M.delete(path)
   vim.fn.delete(M.test_data_dir .. path, "rf")
 end
 
-local vassert = require("vusted.assert")
-local asserts = vassert.asserts
-M.assert = vassert.assert
+local asserts = require("vusted.assert").asserts
 
 asserts.create("content"):register_eq(function(file_path)
   local f = io.open(file_path, "r")

@@ -1,4 +1,4 @@
-local Tag = require("genvdoc/documentor/help/tag").Tag
+local Tag = require("genvdoc.documentor.help.tag").Tag
 
 local M = {}
 

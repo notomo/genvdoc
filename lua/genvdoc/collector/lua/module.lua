@@ -1,4 +1,4 @@
-local Path = require("genvdoc/lib/path").Path
+local Path = require("genvdoc.lib.path").Path
 
 local M = {}
 

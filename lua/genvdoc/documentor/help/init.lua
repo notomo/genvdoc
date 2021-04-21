@@ -1,5 +1,5 @@
-local Tag = require("genvdoc/documentor/help/tag").Tag
-local Separator = require("genvdoc/documentor/help/separator").Separator
+local Tag = require("genvdoc.documentor.help.tag").Tag
+local Separator = require("genvdoc.documentor.help.separator").Separator
 
 local M = {}
 

@@ -1,5 +1,5 @@
-local Tag = require("genvdoc/documentor/help/tag").Tag
-local Declaration = require("genvdoc/documentor/help/declaration").Declaration
+local Tag = require("genvdoc.documentor.help.tag").Tag
+local Declaration = require("genvdoc.documentor.help.declaration").Declaration
 
 local M = {}
 

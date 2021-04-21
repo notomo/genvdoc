@@ -1,6 +1,6 @@
-local Path = require("genvdoc/lib/path").Path
-local Collector = require("genvdoc/collector").Collector
-local Documentor = require("genvdoc/documentor").Documentor
+local Path = require("genvdoc.lib.path").Path
+local Collector = require("genvdoc.collector").Collector
+local Documentor = require("genvdoc.documentor").Documentor
 
 local M = {}
 
