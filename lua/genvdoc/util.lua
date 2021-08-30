@@ -1,24 +1,26 @@
 local M = {}
 
 function M.help_code_block_from_file(file_path)
+  vim.validate({file_path = {file_path, "string"}})
   local f = io.open(file_path, "r")
-  local strs = {}
+  local lines = {}
   for line in f:lines() do
-    table.insert(strs, line)
+    table.insert(lines, line)
   end
   f:close()
-  local indented = M.indent(table.concat(strs, "\n"), 2)
+  local indented = M.indent(table.concat(lines, "\n"), 2)
   return (">\n%s\n<"):format(indented)
 end
 
-function M.indent(strs, count)
+function M.indent(str, count)
+  vim.validate({str = {str, "string"}, count = {count, "number"}})
   local indent = (" "):rep(count)
   local lines = {}
-  for _, str in ipairs(vim.split(strs, "\n", true)) do
-    if str == "" then
-      table.insert(lines, str)
+  for _, line in ipairs(vim.split(str, "\n", true)) do
+    if line == "" then
+      table.insert(lines, line)
     else
-      table.insert(lines, ("%s%s"):format(indent, str))
+      table.insert(lines, ("%s%s"):format(indent, line))
     end
   end
   return table.concat(lines, "\n")
