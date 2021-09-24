@@ -43,6 +43,14 @@ function Declaration.build(self, lines, width)
       local line = ("  {%s} (%s) %s"):format(param, typ, desc)
       table.insert(results, line)
     end
+    if self._declaration.has_variadic then
+      local comment = self._declaration.param_lines[#self._declaration.param_lines] or "TODO"
+      local factors = vim.split(comment, "%s+")
+      local typ = (factors[1] or "TODO"):gsub(":", "")
+      local desc = table.concat(vim.list_slice(factors, 2), " ")
+      local line = ("  {%s} (%s) %s"):format("...", typ, desc)
+      table.insert(results, line)
+    end
   end
 
   results = vim.tbl_map(function(line)
