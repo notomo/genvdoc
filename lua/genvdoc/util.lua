@@ -1,11 +1,17 @@
 local M = {}
 
-function M.help_code_block_from_file(file_path)
+function M.help_code_block_from_file(file_path, opts)
   vim.validate({file_path = {file_path, "string"}})
+  opts = opts or {}
+  opts.include = opts.include or function(_)
+    return true
+  end
   local f = io.open(file_path, "r")
   local lines = {}
   for line in f:lines() do
-    table.insert(lines, line)
+    if opts.include(line) then
+      table.insert(lines, line)
+    end
   end
   f:close()
   local indented = M.indent(table.concat(lines, "\n"), 2)
