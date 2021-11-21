@@ -98,7 +98,7 @@ function M.collect(self)
   local all_nodes = {}
 
   local modules = Modules.new(self.target_dir)
-  local paths = Path.new(self.target_dir):glob("**/*.lua")
+  local paths = Path.new(self.target_dir):glob("lua/**/*.lua")
   for _, path in ipairs(paths) do
     local processor = Processor.new(modules, path)
     local iter = processor:iter()

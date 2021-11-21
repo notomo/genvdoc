@@ -4,10 +4,13 @@ local M = require("vusted.helper")
 M.root = M.find_plugin_root(plugin_name)
 M.test_data_path = "spec/test_data/"
 M.test_data_dir = M.root .. "/" .. M.test_data_path
+local runtimepath = vim.o.runtimepath
 
 function M.before_each()
   M.new_directory("")
   vim.api.nvim_set_current_dir(M.test_data_dir)
+  vim.o.runtimepath = runtimepath
+  M.use_parsers()
 end
 
 function M.after_each()
@@ -20,6 +23,10 @@ function M.after_each()
 
   M.cleanup_loaded_modules(plugin_name)
   M.delete("")
+end
+
+function M.use_parsers()
+  vim.o.runtimepath = M.root .. "/script/nvim-treesitter," .. vim.o.runtimepath
 end
 
 function M.new_file(path, ...)
