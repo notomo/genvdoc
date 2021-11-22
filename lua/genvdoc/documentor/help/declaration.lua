@@ -24,18 +24,30 @@ function Declaration.build(self, lines, width)
     vim.list_extend(results, lines)
   end
   if self._declaration.type == "method" then
-    local name = ("%s.%s()"):format(self._declaration.module, self._declaration.name)
+    local has_self_param = self._declaration.params[1] == "self"
+    local name
+    if has_self_param then
+      name = ("%s:%s()"):format(self._declaration.module, self._declaration.name)
+    else
+      name = ("%s.%s()"):format(self._declaration.module, self._declaration.name)
+    end
+    local params_except_self = vim.tbl_filter(function(param)
+      return param ~= "self"
+    end, self._declaration.params)
     local params = vim.tbl_map(function(param)
       return ("{%s}"):format(param)
-    end, self._declaration.params)
+    end, params_except_self)
+    if self._declaration.has_variadic then
+      table.insert(params, "{...}")
+    end
     local str = ("%s(%s)"):format(self._declaration.name, table.concat(params, ", "))
     title = Tag.add(str, width, name)
     vim.list_extend(results, lines)
-    if #self._declaration.params > 0 then
+    if #params > 0 then
       table.insert(results, "")
       table.insert(results, "Parameters: ~")
     end
-    for i, param in ipairs(self._declaration.params) do
+    for i, param in ipairs(params_except_self) do
       local comment = self._declaration.param_lines[i] or "TODO"
       local factors = vim.split(comment, "%s+")
       local typ = (factors[2] or "TODO"):gsub(":", "")

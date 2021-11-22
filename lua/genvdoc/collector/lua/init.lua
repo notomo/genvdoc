@@ -20,6 +20,7 @@ function Processor.new(modules, path)
 (function
   (function_name (function_name_field (property_identifier) @method))
   (parameters (identifier) @param)?
+  (parameters (self) @param)?
 )
 ]])
   local tbl = {
@@ -58,6 +59,7 @@ function Processor.parse_comment(self, i, node)
     local comment = self:_parse_comment(text)
     return {lines = comment}, self.STAGE.SEARCH_DECLARATION
   end
+  self._row = nil
 end
 
 function Processor.search_declaration(self, i, node)

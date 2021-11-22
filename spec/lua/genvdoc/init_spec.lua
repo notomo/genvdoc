@@ -10,6 +10,11 @@ describe("genvdoc", function()
     helper.new_directory("lua")
     helper.new_directory("lua/genvdoc")
     helper.new_file("lua/genvdoc/init.lua", [[
+local ignored = {}
+
+function ignored.inspect()
+end
+
 local M = {}
 
 --- Inspect a tbl.
@@ -21,7 +26,8 @@ function M.inspect(tbl, ...)
 end
 
 --- Inspect2.
-function M.inspect2()
+--- @param arg1 table: the first argument
+function M.inspect2(self, arg1)
   return vim.inspect()
 end
 
@@ -73,7 +79,7 @@ return M
 ==============================================================================
 Lua module: genvdoc                                          *genvdoc-genvdoc*
 
-inspect({tbl})                                             *genvdoc.inspect()*
+inspect({tbl}, {...})                                      *genvdoc.inspect()*
   Inspect a tbl.
 
   Parameters: ~
@@ -83,8 +89,11 @@ inspect({tbl})                                             *genvdoc.inspect()*
   Return: ~
     (string) inspected
 
-inspect2()                                                *genvdoc.inspect2()*
+inspect2({arg1})                                          *genvdoc:inspect2()*
   Inspect2.
+
+  Parameters: ~
+    {arg1} (table) the first argument
 
 inspect4({tbl})                                           *genvdoc.inspect4()*
   Inspect4.
