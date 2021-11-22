@@ -51,6 +51,18 @@ function Declaration.build(self, lines, width)
       local line = ("  {%s} (%s) %s"):format("...", typ, desc)
       table.insert(results, line)
     end
+
+    if #self._declaration.returns > 0 then
+      table.insert(results, "")
+      table.insert(results, "Return: ~")
+    end
+    for _, ret in ipairs(self._declaration.returns) do
+      local factors = vim.split(ret, "%s+")
+      local typ = (factors[1] or "TODO"):gsub(":", "")
+      local desc = table.concat(vim.list_slice(factors, 2), " ")
+      local line = ("  (%s) %s"):format(typ, desc)
+      table.insert(results, line)
+    end
   end
 
   results = vim.tbl_map(function(line)

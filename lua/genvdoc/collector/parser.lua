@@ -4,7 +4,10 @@ local Result = {}
 Result.__index = Result
 
 function Result.new()
-  local tbl = {lines = {}, declaration = {params = {}, param_lines = {}, has_variadic = false}}
+  local tbl = {
+    lines = {},
+    declaration = {params = {}, param_lines = {}, returns = {}, has_variadic = false},
+  }
   return setmetatable(tbl, Result)
 end
 

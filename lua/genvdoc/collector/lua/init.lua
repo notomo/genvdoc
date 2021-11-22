@@ -72,6 +72,9 @@ function Processor.search_declaration(self, i, node)
     elseif vim.startswith(comment, "@vararg ") then
       local _, e = comment:find([[^@vararg%s+]])
       return {declaration = {has_variadic = true, param_lines = comment:sub(e + 1)}}
+    elseif vim.startswith(comment, "@return ") then
+      local _, e = comment:find([[^@return%s+]])
+      return {declaration = {returns = comment:sub(e + 1)}}
     else
       return {lines = comment}
     end
