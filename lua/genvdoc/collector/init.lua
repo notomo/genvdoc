@@ -13,7 +13,7 @@ function Source.new(setting)
     return nil, err
   end
 
-  local tbl = {target_dir = Path.new(setting.target_dir or "."):get()}
+  local tbl = {target_dir = Path.new(setting.target_dir or "."):get(), pattern = setting.pattern}
   local origin = setmetatable(source, Source)
   origin.__index = origin
   return setmetatable(tbl, origin)
@@ -25,7 +25,7 @@ M.Collector = Collector
 
 function Collector.new(settings)
   vim.validate({settings = {settings, "table", true}})
-  settings = settings or {{name = "lua"}}
+  settings = settings or {{name = "lua", pattern = "lua/**/*.lua"}}
 
   local sources = {}
   for _, setting in ipairs(settings) do
