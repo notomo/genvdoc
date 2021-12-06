@@ -210,4 +210,33 @@ vim:tw=78:ts=8:ft=help
 ]])
 
   end)
+
+  it("can generate a document with no chapters", function()
+    local err = genvdoc.generate("genvdoc", {
+      output_dir = helper.test_data_dir,
+      chapters = {
+        {
+          name = function(group)
+            return "Lua module: " .. group
+          end,
+          group = function(node)
+            if node.declaration == nil then
+              return nil
+            end
+            return node.declaration.module
+          end,
+        },
+      },
+    })
+    assert.is_nil(err)
+
+    local file_path = helper.test_data_dir .. "genvdoc.txt"
+    assert.content(file_path, "\n" .. [[
+*genvdoc.txt*
+
+
+==============================================================================
+vim:tw=78:ts=8:ft=help
+]])
+  end)
 end)

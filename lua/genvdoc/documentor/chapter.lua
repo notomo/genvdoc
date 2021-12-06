@@ -42,7 +42,7 @@ function ChapterSetting.group(self, nodes)
   end
 
   local group_names = vim.tbl_keys(groups)
-  if #group_names == 0 then
+  if #group_names == 0 and type(self._setting.name) == "string" then
     table.insert(group_names, self._setting.name)
   end
   table.sort(group_names, function(a, b)
