@@ -46,7 +46,21 @@ function M.each_keys_description(keys, descriptions, format_values)
 
   local lines = {}
   for _, key in ipairs(keys) do
-    local desc = ("- {%s} " .. (descriptions[key] or "Todo")):format(key, vim.inspect(format_values[key]))
+    local description = descriptions[key]
+
+    local text
+    if type(description) == "table" then
+      local children_descriptions = description.children or {}
+      local children_keys = vim.tbl_keys(children_descriptions)
+      local children_format_values = format_values[key] or {}
+      local children_lines = M.each_keys_description(children_keys, children_descriptions, children_format_values)
+      text = description.text .. "\n" .. M.indent(table.concat(children_lines, "\n"), 2)
+    else
+      text = description
+    end
+    text = text or "Todo"
+
+    local desc = ("- {%s} " .. text):format(key, vim.inspect(format_values[key]))
     table.insert(lines, desc)
   end
   return lines
