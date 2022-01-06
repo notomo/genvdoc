@@ -5,7 +5,7 @@ ChapterSetting.__index = ChapterSetting
 M.ChapterSetting = ChapterSetting
 
 function ChapterSetting.new(cls, setting)
-  vim.validate({cls = {cls, "table"}, setting = {setting, "table"}})
+  vim.validate({ cls = { cls, "table" }, setting = { setting, "table" } })
 
   local group = setting.group or function(_)
     return nil
@@ -20,12 +20,12 @@ function ChapterSetting.new(cls, setting)
     end
   end
 
-  local tbl = {_group = group, _name = name, _cls = cls, _setting = setting}
+  local tbl = { _group = group, _name = name, _cls = cls, _setting = setting }
   return setmetatable(tbl, ChapterSetting)
 end
 
 function ChapterSetting.group(self, nodes)
-  vim.validate({nodes = {nodes, "table"}})
+  vim.validate({ nodes = { nodes, "table" } })
 
   local groups = {}
   for _, node in ipairs(nodes) do

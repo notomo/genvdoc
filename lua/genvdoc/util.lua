@@ -1,7 +1,7 @@
 local M = {}
 
 function M.help_code_block_from_file(file_path, opts)
-  vim.validate({file_path = {file_path, "string"}})
+  vim.validate({ file_path = { file_path, "string" } })
   opts = opts or {}
   opts.include = opts.include or function(_)
     return true
@@ -19,7 +19,7 @@ function M.help_code_block_from_file(file_path, opts)
 end
 
 function M.indent(str, count)
-  vim.validate({str = {str, "string"}, count = {count, "number"}})
+  vim.validate({ str = { str, "string" }, count = { count, "number" } })
   local indent = (" "):rep(count)
   local lines = {}
   for _, line in ipairs(vim.split(str, "\n", true)) do
@@ -78,7 +78,10 @@ end
 function M.hl_group_sections(ctx, names, descriptions)
   local sections = {}
   for _, hl_group in ipairs(names) do
-    table.insert(sections, M.help_tagged(ctx, hl_group, "hl-" .. hl_group) .. M.indent(descriptions[hl_group] or "Todo", 2))
+    table.insert(
+      sections,
+      M.help_tagged(ctx, hl_group, "hl-" .. hl_group) .. M.indent(descriptions[hl_group] or "Todo", 2)
+    )
   end
   return table.concat(sections, "\n\n")
 end

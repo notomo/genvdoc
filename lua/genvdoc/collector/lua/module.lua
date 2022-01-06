@@ -8,7 +8,7 @@ M.Modules = Modules
 
 function Modules.new(dir)
   local lua_dir = Path.new(dir):join("lua/")
-  local tbl = {_dir = lua_dir}
+  local tbl = { _dir = lua_dir }
   return setmetatable(tbl, Modules)
 end
 

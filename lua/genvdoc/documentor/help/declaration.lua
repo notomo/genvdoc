@@ -7,7 +7,7 @@ Declaration.__index = Declaration
 M.Declaration = Declaration
 
 function Declaration.new(declaration)
-  local tbl = {_declaration = declaration}
+  local tbl = { _declaration = declaration }
   return setmetatable(tbl, Declaration)
 end
 

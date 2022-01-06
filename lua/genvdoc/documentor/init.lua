@@ -9,8 +9,8 @@ M.Documentor = Documentor
 
 function Documentor.new(document_type, settings)
   vim.validate({
-    document_type = {document_type, "string", true},
-    settings = {settings, "table", true},
+    document_type = { document_type, "string", true },
+    settings = { settings, "table", true },
   })
 
   document_type = document_type or "help"
@@ -35,7 +35,7 @@ function Documentor.new(document_type, settings)
 end
 
 function Documentor.generate(self, plugin_name, nodes)
-  vim.validate({plugin_name = {plugin_name, "string"}, nodes = {nodes, "table"}})
+  vim.validate({ plugin_name = { plugin_name, "string" }, nodes = { nodes, "table" } })
 
   local all_chapters = {}
   for _, setting in ipairs(self._settings) do

@@ -12,17 +12,20 @@ Processor.STAGE = {
   PARSE_DECLARATION = "PARSE_DECLARATION",
 }
 Processor.FIRST_STAGE = Processor.STAGE.PARSE_COMMENT
-Processor.COMPLETE_STAGE = {Processor.STAGE.PARSE_DECLARATION}
+Processor.COMPLETE_STAGE = { Processor.STAGE.PARSE_DECLARATION }
 
 function Processor.new(modules, path)
-  local query = vim.treesitter.parse_query("lua", [[
+  local query = vim.treesitter.parse_query(
+    "lua",
+    [[
 ((comment) @comment (match? @comment "^---"))
 (function
   (function_name (function_name_field (property_identifier) @method))
   (parameters (identifier) @param)?
   (parameters (self) @param)?
 )
-]])
+]]
+  )
   local tbl = {
     _module_name = modules:from_path(path),
     _query = query,
@@ -34,7 +37,7 @@ function Processor.new(modules, path)
 end
 
 function Processor._matched(self, i, node)
-  local row, start_col, _, end_col = unpack({node:range()})
+  local row, start_col, _, end_col = unpack({ node:range() })
   self._joined = self._row == nil or (self._joined and (row == self._row or row - 1 == self._row))
   self._row = row
   return self._query.captures[i], self._lines[row + 1]:sub(start_col + 1, end_col)
@@ -57,7 +60,7 @@ function Processor.parse_comment(self, i, node)
   local name, text = self:_matched(i, node)
   if name == "comment" then
     local comment = self:_parse_comment(text)
-    return {lines = comment}, self.STAGE.SEARCH_DECLARATION
+    return { lines = comment }, self.STAGE.SEARCH_DECLARATION
   end
   self._row = nil
 end
@@ -65,20 +68,20 @@ end
 function Processor.search_declaration(self, i, node)
   local name, text = self:_matched(i, node)
   if name == "method" then
-    return {declaration = {name = text, type = "method", module = self._module_name}}, self.STAGE.PARSE_DECLARATION
+    return { declaration = { name = text, type = "method", module = self._module_name } }, self.STAGE.PARSE_DECLARATION
   elseif name == "comment" then
     local comment = self:_parse_comment(text)
     if vim.startswith(comment, "@param ") then
       local _, e = comment:find([[^@param%s+]])
-      return {declaration = {param_lines = comment:sub(e + 1)}}
+      return { declaration = { param_lines = comment:sub(e + 1) } }
     elseif vim.startswith(comment, "@vararg ") then
       local _, e = comment:find([[^@vararg%s+]])
-      return {declaration = {has_variadic = true, param_lines = comment:sub(e + 1)}}
+      return { declaration = { has_variadic = true, param_lines = comment:sub(e + 1) } }
     elseif vim.startswith(comment, "@return ") then
       local _, e = comment:find([[^@return%s+]])
-      return {declaration = {returns = comment:sub(e + 1)}}
+      return { declaration = { returns = comment:sub(e + 1) } }
     else
-      return {lines = comment}
+      return { lines = comment }
     end
   end
 end
@@ -86,7 +89,7 @@ end
 function Processor.parse_declaration(self, i, node)
   local name, text = self:_matched(i, node)
   if name == "param" and self._joined then
-    return {declaration = {params = text}}
+    return { declaration = { params = text } }
   elseif name == "comment" then
     self._joined = true
     return nil, self.STAGE.PARSE_COMMENT, true

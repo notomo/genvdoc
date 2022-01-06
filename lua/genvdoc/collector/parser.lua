@@ -6,7 +6,7 @@ Result.__index = Result
 function Result.new()
   local tbl = {
     lines = {},
-    declaration = {params = {}, param_lines = {}, returns = {}, has_variadic = false},
+    declaration = { params = {}, param_lines = {}, returns = {}, has_variadic = false },
   }
   return setmetatable(tbl, Result)
 end
@@ -29,7 +29,7 @@ local function merge(origin, result)
 end
 
 function Result.merge(self, result)
-  vim.validate({result = {result, "table", true}})
+  vim.validate({ result = { result, "table", true } })
   if result == nil then
     return
   end
@@ -40,13 +40,13 @@ local State = {}
 State.__index = State
 
 function State.new(stage_name, processor)
-  vim.validate({stage_name = {stage_name, "string"}, processor = {processor, "table"}})
-  local tbl = {stage_name = stage_name, _processor = processor}
+  vim.validate({ stage_name = { stage_name, "string" }, processor = { processor, "table" } })
+  local tbl = { stage_name = stage_name, _processor = processor }
   return setmetatable(tbl, State)
 end
 
 function State.changed(self, stage_name)
-  vim.validate({stage_name = {stage_name, "string", true}})
+  vim.validate({ stage_name = { stage_name, "string", true } })
   if stage_name == nil then
     return false
   end
@@ -59,7 +59,7 @@ function State.process(self, values)
 end
 
 function State.transition(self, stage_name)
-  vim.validate({stage_name = {stage_name, "string"}})
+  vim.validate({ stage_name = { stage_name, "string" } })
   return self.new(stage_name, self._processor)
 end
 
@@ -68,7 +68,7 @@ Parser.__index = Parser
 M.Parser = Parser
 
 function Parser.new(processor, iter)
-  vim.validate({processor = {processor, "table"}, iter = {iter, "function"}})
+  vim.validate({ processor = { processor, "table" }, iter = { iter, "function" } })
   local state = State.new(processor.FIRST_STAGE, processor)
   local tbl = {
     _state = state,
@@ -87,7 +87,7 @@ function Parser.parse(self)
   local skip_iter = false
   while true do
     if not skip_iter then
-      iter_values = {self._iter()}
+      iter_values = { self._iter() }
     end
 
     if iter_values[1] == nil then

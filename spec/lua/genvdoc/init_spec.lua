@@ -2,14 +2,15 @@ local helper = require("genvdoc.lib.testlib.helper")
 local genvdoc = helper.require("genvdoc")
 
 describe("genvdoc", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
   it("can generate a help document", function()
     helper.new_directory("lua")
     helper.new_directory("lua/genvdoc")
-    helper.new_file("lua/genvdoc/init.lua", [[
+    helper.new_file(
+      "lua/genvdoc/init.lua",
+      [[
 local ignored = {}
 
 function ignored.inspect()
@@ -42,8 +43,11 @@ function M.inspect4(tbl)
 end
 
 return M
-]])
-    helper.new_file("lua/genvdoc/other.lua", [[
+]]
+    )
+    helper.new_file(
+      "lua/genvdoc/other.lua",
+      [[
 local M = {}
 
 --- Other.
@@ -52,7 +56,8 @@ function M.other()
 end
 
 return M
-]])
+]]
+    )
 
     local err = genvdoc.generate("genvdoc", {
       output_dir = helper.test_data_dir,
@@ -114,24 +119,30 @@ vim:tw=78:ts=8:ft=help
 
   it("can select source files by pattern", function()
     helper.new_directory("lua")
-    helper.new_file("lua/test1.lua", [[
+    helper.new_file(
+      "lua/test1.lua",
+      [[
 local M = {}
 --- Test1.
 function M.f1()
 end
 return M
-]])
-    helper.new_file("lua/test2.lua", [[
+]]
+    )
+    helper.new_file(
+      "lua/test2.lua",
+      [[
 local M = {}
 --- Test2.
 function M.f2()
 end
 return M
-]])
+]]
+    )
 
     local err = genvdoc.generate("genvdoc", {
       output_dir = helper.test_data_dir,
-      sources = {{name = "lua", pattern = "lua/test1\\.lua"}},
+      sources = { { name = "lua", pattern = "lua/test1\\.lua" } },
       chapters = {
         {
           name = function(group)
@@ -165,9 +176,12 @@ vim:tw=78:ts=8:ft=help
   end)
 
   it("can add examples to the doc", function()
-    helper.new_file("example.vim", [[
+    helper.new_file(
+      "example.vim",
+      [[
 nnoremap <Leader>h <Cmd>Genvdoc hoge<CR>
-nnoremap <Leader>f <Cmd>Genvdoc foo<CR>]])
+nnoremap <Leader>f <Cmd>Genvdoc foo<CR>]]
+    )
 
     local err = genvdoc.generate("genvdoc", {
       output_dir = helper.test_data_dir,
@@ -208,7 +222,6 @@ EXAMPLES                                                    *genvdoc-EXAMPLES*
 ==============================================================================
 vim:tw=78:ts=8:ft=help
 ]])
-
   end)
 
   it("can generate a document with no chapters", function()
