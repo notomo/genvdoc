@@ -19,10 +19,9 @@ function Processor.new(modules, path)
     "lua",
     [[
 ((comment) @comment (match? @comment "^---"))
-(function
-  (function_name (function_name_field (property_identifier) @method))
-  (parameters (identifier) @param)?
-  (parameters (self) @param)?
+(function_declaration
+  name: (_ field: (identifier) @method)
+  parameters: (_ name: (identifier) @param)
 )
 ]]
   )
