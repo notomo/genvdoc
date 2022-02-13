@@ -14,7 +14,12 @@ function M.help_code_block_from_file(file_path, opts)
     end
   end
   f:close()
-  local indented = M.indent(table.concat(lines, "\n"), 2)
+  local str = table.concat(lines, "\n")
+  return M.help_code_block(str)
+end
+
+function M.help_code_block(str)
+  local indented = M.indent(str, 2)
   return (">\n%s\n<"):format(indented)
 end
 
