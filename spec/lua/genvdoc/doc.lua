@@ -1,5 +1,4 @@
 vim.o.runtimepath = vim.fn.getcwd() .. "," .. vim.o.runtimepath
-vim.o.runtimepath = vim.fn.getcwd() .. "/script/nvim-treesitter," .. vim.o.runtimepath
 
 local gen = function()
   require("genvdoc").generate("genvdoc", {
