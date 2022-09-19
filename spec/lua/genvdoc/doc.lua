@@ -1,7 +1,8 @@
 vim.o.runtimepath = vim.fn.getcwd() .. "," .. vim.o.runtimepath
+local plugin_name = vim.env.PLUGIN_NAME
 
 local gen = function()
-  require("genvdoc").generate("genvdoc", {
+  require("genvdoc").generate(plugin_name, {
     chapters = {
       {
         name = function(group)

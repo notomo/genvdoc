@@ -1,5 +1,5 @@
 local Path = require("genvdoc.lib.path").Path
-local modulelib = require("genvdoc.lib.module")
+local modulelib = require("genvdoc.vendor.misclib.module")
 
 local M = {}
 

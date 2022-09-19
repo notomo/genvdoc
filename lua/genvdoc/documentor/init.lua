@@ -1,5 +1,5 @@
 local ChapterSetting = require("genvdoc.documentor.chapter").ChapterSetting
-local modulelib = require("genvdoc.lib.module")
+local modulelib = require("genvdoc.vendor.misclib.module")
 
 local M = {}
 
