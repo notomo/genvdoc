@@ -1,4 +1,4 @@
-local helper = require("genvdoc.lib.testlib.helper")
+local helper = require("genvdoc.test.helper")
 local genvdoc = helper.require("genvdoc")
 
 describe("genvdoc", function()
