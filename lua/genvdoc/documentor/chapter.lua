@@ -1,36 +1,27 @@
-local ChapterSetting = {}
-ChapterSetting.__index = ChapterSetting
+local M = {}
 
-function ChapterSetting.new(setting)
-  vim.validate({ setting = { setting, "table" } })
+function M.grouping(raw_setting, nodes)
+  vim.validate({
+    raw_setting = { raw_setting, "table" },
+    nodes = { nodes, "table" },
+  })
 
-  local group = setting.group or function(_)
+  local group = raw_setting.group or function(_)
     return nil
   end
 
-  local name
-  if type(setting.name) == "function" then
-    name = setting.name
+  local to_chapter_name
+  if type(raw_setting.name) == "function" then
+    to_chapter_name = raw_setting.name
   else
-    name = function(_)
-      return setting.name
+    to_chapter_name = function(_)
+      return raw_setting.name
     end
   end
 
-  local tbl = {
-    _group = group,
-    _name = name,
-    _setting = setting,
-  }
-  return setmetatable(tbl, ChapterSetting)
-end
-
-function ChapterSetting.group(self, nodes)
-  vim.validate({ nodes = { nodes, "table" } })
-
   local groups = {}
   for _, node in ipairs(nodes) do
-    local group_name = self._group(node)
+    local group_name = group(node)
     if group_name == nil then
       goto continue
     end
@@ -43,17 +34,17 @@ function ChapterSetting.group(self, nodes)
   end
 
   local group_names = vim.tbl_keys(groups)
-  if #group_names == 0 and type(self._setting.name) == "string" then
-    table.insert(group_names, self._setting.name)
+  if #group_names == 0 and type(raw_setting.name) == "string" then
+    table.insert(group_names, raw_setting.name)
   end
   table.sort(group_names, function(a, b)
     return a < b
   end)
 
   return vim.tbl_map(function(group_name)
-    local name = self._name(group_name)
-    return require("genvdoc.documentor.help.chapter").new(name, group_name, groups[group_name], self._setting.body)
+    local name = to_chapter_name(group_name)
+    return require("genvdoc.documentor.help.chapter").new(name, group_name, groups[group_name], raw_setting.body)
   end, group_names)
 end
 
-return ChapterSetting
+return M

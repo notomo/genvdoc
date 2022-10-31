@@ -9,7 +9,7 @@ function M.generate(plugin_name, nodes, raw_chapter_settings)
 
   local all_chapters = {}
   for _, raw_setting in ipairs(raw_chapter_settings) do
-    local chapters = require("genvdoc.documentor.chapter").new(raw_setting):group(nodes)
+    local chapters = require("genvdoc.documentor.chapter").grouping(raw_setting, nodes)
     vim.list_extend(all_chapters, chapters)
   end
 
