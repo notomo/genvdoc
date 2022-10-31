@@ -101,11 +101,11 @@ Processor.STAGES = {
   [Processor.STAGE.PARSE_DECLARATION] = Processor.parse_declaration,
 }
 
-function M.collect(self)
+function M.collect(pattern)
   local all_nodes = {}
 
-  local modules = Modules.new(self.target_dir)
-  local paths = Path.new(self.target_dir):glob(self.pattern)
+  local modules = Modules.new(".")
+  local paths = Path.new("."):glob(pattern)
   for _, path in ipairs(paths) do
     local processor = Processor.new(modules, path)
     local iter = processor:iter()

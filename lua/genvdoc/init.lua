@@ -8,13 +8,9 @@ local M = {}
 function M.generate(plugin_name, opts)
   opts = require("genvdoc.option").new(opts)
 
-  local collector, err = require("genvdoc.collector").new(opts.sources)
-  if err ~= nil then
-    return err
-  end
-
-  local nodes = collector:collect()
+  local nodes = require("genvdoc.collector").collect(opts.source)
   local doc = require("genvdoc.documentor").generate(plugin_name, nodes, opts.chapters)
+
   Path.new(opts.output_dir):join(doc.name):write(doc:build())
 
   return nil

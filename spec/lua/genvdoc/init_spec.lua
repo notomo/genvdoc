@@ -142,7 +142,9 @@ return M
 
     local err = genvdoc.generate("genvdoc", {
       output_dir = helper.test_data.full_path,
-      sources = { { name = "lua", pattern = "lua/test1\\.lua" } },
+      source = {
+        patterns = { "lua/test1\\.lua" },
+      },
       chapters = {
         {
           name = function(group)

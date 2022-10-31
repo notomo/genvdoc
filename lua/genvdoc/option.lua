@@ -1,8 +1,8 @@
 local Option = {}
 
 Option.default = {
-  sources = {
-    { name = "lua", pattern = "lua/**/*.lua" },
+  source = {
+    patterns = { "lua/**/*.lua" },
   },
   output_dir = "./doc/",
   chapters = {},
