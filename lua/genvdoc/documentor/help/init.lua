@@ -1,11 +1,8 @@
-local Tag = require("genvdoc.documentor.help.tag").Tag
-local Separator = require("genvdoc.documentor.help.separator").Separator
-
-local M = {}
+local Tag = require("genvdoc.documentor.help.tag")
+local Separator = require("genvdoc.documentor.help.separator")
 
 local Document = {}
 Document.__index = Document
-M.Document = Document
 
 function Document.new(plugin_name, chapters)
   local width = 78
@@ -40,4 +37,4 @@ function Document._footer(self)
   return ("vim:tw=%s:ts=%s:ft=help"):format(self._width, self._tabstop)
 end
 
-return M
+return Document

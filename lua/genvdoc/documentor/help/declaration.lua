@@ -1,10 +1,7 @@
-local Tag = require("genvdoc.documentor.help.tag").Tag
-
-local M = {}
+local Tag = require("genvdoc.documentor.help.tag")
 
 local Declaration = {}
 Declaration.__index = Declaration
-M.Declaration = Declaration
 
 function Declaration.new(declaration)
   local tbl = { _declaration = declaration }
@@ -88,4 +85,4 @@ function Declaration.build(self, lines, width)
   return results
 end
 
-return M
+return Declaration

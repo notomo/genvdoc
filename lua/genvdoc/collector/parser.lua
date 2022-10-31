@@ -1,5 +1,3 @@
-local M = {}
-
 local Result = {}
 Result.__index = Result
 
@@ -65,7 +63,6 @@ end
 
 local Parser = {}
 Parser.__index = Parser
-M.Parser = Parser
 
 function Parser.new(processor, iter)
   vim.validate({ processor = { processor, "table" }, iter = { iter, "function" } })
@@ -118,4 +115,4 @@ function Parser.parse(self)
   return nodes
 end
 
-return M
+return Parser

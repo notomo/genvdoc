@@ -1,10 +1,7 @@
 local Path = require("genvdoc.lib.path").Path
 
-local M = {}
-
 local Modules = {}
 Modules.__index = Modules
-M.Modules = Modules
 
 function Modules.new(dir)
   local lua_dir = Path.new(dir):join("lua/")
@@ -23,4 +20,4 @@ function Modules.from_path(self, path)
   return table.concat(vim.split(relative_path, "/", true), ".")
 end
 
-return M
+return Modules

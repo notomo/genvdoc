@@ -1,8 +1,5 @@
-local M = {}
-
 local Tag = {}
 Tag.__index = Tag
-M.Tag = Tag
 
 function Tag.new(str)
   return ("*%s*"):format(str)
@@ -21,4 +18,4 @@ function Tag.add(str, width, name)
   return str .. spaces .. tag
 end
 
-return M
+return Tag

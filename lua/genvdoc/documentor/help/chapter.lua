@@ -1,11 +1,8 @@
-local Tag = require("genvdoc.documentor.help.tag").Tag
-local Declaration = require("genvdoc.documentor.help.declaration").Declaration
-
-local M = {}
+local Tag = require("genvdoc.documentor.help.tag")
+local Declaration = require("genvdoc.documentor.help.declaration")
 
 local Chapter = {}
 Chapter.__index = Chapter
-M.Chapter = Chapter
 
 function Chapter.new(name, group_name, nodes, body)
   vim.validate({
@@ -46,4 +43,4 @@ function Chapter.build(self, plugin_name, width)
   return table.concat(lines, "\n")
 end
 
-return M
+return Chapter

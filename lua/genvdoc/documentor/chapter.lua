@@ -1,11 +1,8 @@
-local M = {}
-
 local ChapterSetting = {}
 ChapterSetting.__index = ChapterSetting
-M.ChapterSetting = ChapterSetting
 
-function ChapterSetting.new(cls, setting)
-  vim.validate({ cls = { cls, "table" }, setting = { setting, "table" } })
+function ChapterSetting.new(setting)
+  vim.validate({ setting = { setting, "table" } })
 
   local group = setting.group or function(_)
     return nil
@@ -20,7 +17,11 @@ function ChapterSetting.new(cls, setting)
     end
   end
 
-  local tbl = { _group = group, _name = name, _cls = cls, _setting = setting }
+  local tbl = {
+    _group = group,
+    _name = name,
+    _setting = setting,
+  }
   return setmetatable(tbl, ChapterSetting)
 end
 
@@ -51,8 +52,8 @@ function ChapterSetting.group(self, nodes)
 
   return vim.tbl_map(function(group_name)
     local name = self._name(group_name)
-    return self._cls.new(name, group_name, groups[group_name], self._setting.body)
+    return require("genvdoc.documentor.help.chapter").new(name, group_name, groups[group_name], self._setting.body)
   end, group_names)
 end
 
-return M
+return ChapterSetting

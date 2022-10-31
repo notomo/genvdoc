@@ -1,11 +1,8 @@
 local Path = require("genvdoc.lib.path").Path
 local modulelib = require("genvdoc.vendor.misclib.module")
 
-local M = {}
-
 local Source = {}
 Source.__index = Source
-M.Source = Source
 
 function Source.new(setting)
   local source, err = modulelib.find("genvdoc/collector/" .. setting.name)
@@ -21,11 +18,9 @@ end
 
 local Collector = {}
 Collector.__index = Collector
-M.Collector = Collector
 
 function Collector.new(settings)
-  vim.validate({ settings = { settings, "table", true } })
-  settings = settings or { { name = "lua", pattern = "lua/**/*.lua" } }
+  vim.validate({ settings = { settings, "table" } })
 
   local sources = {}
   for _, setting in ipairs(settings) do
@@ -48,4 +43,4 @@ function Collector.collect(self)
   return nodes
 end
 
-return M
+return Collector

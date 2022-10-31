@@ -1,6 +1,6 @@
 local Path = require("genvdoc.lib.path").Path
-local Parser = require("genvdoc.collector.parser").Parser
-local Modules = require("genvdoc.collector.lua.module").Modules
+local Parser = require("genvdoc.collector.parser")
+local Modules = require("genvdoc.collector.lua.module")
 
 local M = {}
 
