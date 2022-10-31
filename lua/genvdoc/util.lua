@@ -38,7 +38,7 @@ function M.indent(str, count)
 end
 
 function M.help_tagged(ctx, name, tag_name)
-  return require("genvdoc.documentor.help.tag").Tag.add(name, ctx.width, tag_name) .. "\n"
+  return require("genvdoc.documentor.help.tag").add(name, ctx.width, tag_name) .. "\n"
 end
 
 function M.each_keys_description(keys, descriptions, format_values)
