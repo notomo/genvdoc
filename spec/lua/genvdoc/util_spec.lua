@@ -12,4 +12,22 @@ describe("genvdoc.util", function()
 ]]
     assert.equal(want, got)
   end)
+
+  it("help_code_block with no opts", function()
+    local got = util.help_code_block("test")
+    local want = [[
+>
+  test
+<]]
+    assert.equal(want, got)
+  end)
+
+  it("help_code_block with language", function()
+    local got = util.help_code_block("test", { language = "lua" })
+    local want = [[
+>lua
+  test
+<]]
+    assert.equal(want, got)
+  end)
 end)
