@@ -1,4 +1,4 @@
-local Path = require("genvdoc.lib.path").Path
+local pathlib = require("genvdoc.vendor.misclib.path")
 local Parser = require("genvdoc.collector.parser")
 local Modules = require("genvdoc.collector.lua.module")
 
@@ -25,10 +25,16 @@ function Processor.new(modules, path)
 )
 ]]
   )
+
+  local f = io.open(path, "r")
+  local str = f:read("*a")
+  f:close()
+  local lines = vim.split(str, "\n", true)
+
   local tbl = {
     _module_name = modules:from_path(path),
     _query = query,
-    _lines = Path.new(path):read_lines(),
+    _lines = lines,
     _row = nil,
     _joined = true,
   }
@@ -105,7 +111,9 @@ function M.collect(pattern)
   local all_nodes = {}
 
   local modules = Modules.new(".")
-  local paths = Path.new("."):glob(pattern)
+  local current_path = vim.fn.fnamemodify(".", ":p")
+  local full_pattern = pathlib.join(current_path, pattern)
+  local paths = vim.fn.glob(full_pattern, true, true)
   for _, path in ipairs(paths) do
     local processor = Processor.new(modules, path)
     local iter = processor:iter()

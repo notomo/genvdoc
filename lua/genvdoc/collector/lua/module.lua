@@ -1,22 +1,29 @@
-local Path = require("genvdoc.lib.path").Path
+local pathlib = require("genvdoc.vendor.misclib.path")
 
 local Modules = {}
 Modules.__index = Modules
 
 function Modules.new(dir)
-  local lua_dir = Path.new(dir):join("lua/")
-  local tbl = { _dir = lua_dir }
+  local full_path = vim.fn.fnamemodify(dir, ":p")
+  local lua_dir = pathlib.join(full_path, "lua/")
+  local tbl = {
+    _dir_path = lua_dir,
+  }
   return setmetatable(tbl, Modules)
 end
 
 function Modules.from_path(self, path)
   local module_path
-  if Path.new(path):head() == "init.lua" then
-    module_path = Path.new(path):parent():trim_slash():get()
+  if pathlib.tail(path) == "init.lua" then
+    local dir = pathlib.parent(path)
+    module_path = pathlib.trim_slash(dir)
   else
-    module_path = Path.new(path):without_ext()
+    module_path = vim.fn.fnamemodify(path, ":r")
   end
-  local relative_path = self._dir:relative(module_path)
+
+  local pattern = "^" .. pathlib.normalize(self._dir_path):gsub("([^%w])", "%%%1")
+  local relative_path = pathlib.normalize(module_path):gsub(pattern, "", 1)
+
   return table.concat(vim.split(relative_path, "/", true), ".")
 end
 

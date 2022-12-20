@@ -1,4 +1,4 @@
-local Path = require("genvdoc.lib.path").Path
+local pathlib = require("genvdoc.vendor.misclib.path")
 
 local M = {}
 
@@ -11,7 +11,11 @@ function M.generate(plugin_name, opts)
   local nodes = require("genvdoc.collector").collect(opts.source)
   local doc = require("genvdoc.documentor").generate(plugin_name, nodes, opts.chapters)
 
-  Path.new(opts.output_dir):join(doc.name):write(doc:build())
+  local path = pathlib.join(opts.output_dir, doc.name)
+  vim.fn.mkdir(pathlib.parent(path), "p")
+  local f = io.open(path, "w")
+  f:write(doc:build())
+  f:close()
 
   return nil
 end
