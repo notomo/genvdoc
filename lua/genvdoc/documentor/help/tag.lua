@@ -1,21 +1,19 @@
 local Tag = {}
-Tag.__index = Tag
 
 function Tag.new(str)
   return ("*%s*"):format(str)
 end
 
-function Tag.add(str, width, name)
-  local tag_str = name or str
-  local tag = Tag.new(tag_str:gsub("%s+", "-"))
-  local count = width - #tag - #str
-  local spaces
-  if count > 0 then
-    spaces = (" "):rep(count)
-  else
-    spaces = "\n" .. (" "):rep(width - #tag)
+function Tag.add(line, width, tag_name)
+  local tag = Tag.new(tag_name:gsub("%s+", "-"))
+
+  if width > #tag + #line then
+    local spaces = (" "):rep(width - #tag - #line)
+    return line .. spaces .. tag
   end
-  return str .. spaces .. tag
+
+  local spaces = (" "):rep(width - #tag)
+  return line .. "\n" .. spaces .. tag
 end
 
 return Tag
