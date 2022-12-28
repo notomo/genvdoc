@@ -9,15 +9,10 @@ function M.generate(plugin_name, opts)
   opts = require("genvdoc.option").new(opts)
 
   local nodes = require("genvdoc.collector").collect(opts.source)
-  local doc = require("genvdoc.documentor").generate(plugin_name, nodes, opts.chapters)
+  local document = require("genvdoc.documentor").generate(plugin_name, nodes, opts.chapters)
 
-  local path = pathlib.join(opts.output_dir, doc.name)
-  vim.fn.mkdir(pathlib.parent(path), "p")
-  local f = io.open(path, "w")
-  f:write(doc:build())
-  f:close()
-
-  return nil
+  local path = pathlib.join(opts.output_dir, document.name)
+  require("genvdoc.lib.file").write(path, document:build())
 end
 
 return M
