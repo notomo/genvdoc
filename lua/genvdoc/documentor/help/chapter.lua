@@ -35,7 +35,7 @@ function Chapter.build(self, plugin_name, width)
 
   for _, node in ipairs(self._nodes) do
     if node.declaration ~= nil then
-      vim.list_extend(lines, Declaration.new(node.declaration):build(node.lines, width))
+      vim.list_extend(lines, Declaration.build_lines(node.declaration, node.lines, width))
     else
       vim.list_extend(lines, add_indent(node.lines))
     end

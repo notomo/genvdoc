@@ -23,7 +23,7 @@ function M.new(declaration)
   return setmetatable(tbl, M)
 end
 
-function M.tagged(self, width)
+function M.tagged_line(self, width)
   local has_self_param = self._declaration.params[1] == "self"
   local name
   if has_self_param then
