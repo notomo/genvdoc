@@ -1,6 +1,20 @@
 local helper = require("genvdoc.test.helper")
 local genvdoc = helper.require("genvdoc")
 
+local default_chapters = {
+  {
+    name = function(group)
+      return "Lua module: " .. group
+    end,
+    group = function(node)
+      if node.declaration == nil then
+        return nil
+      end
+      return node.declaration.module
+    end,
+  },
+}
+
 describe("genvdoc", function()
   before_each(helper.before_each)
   after_each(helper.after_each)
@@ -61,19 +75,7 @@ return M
 
     local err = genvdoc.generate("genvdoc", {
       output_dir = helper.test_data.full_path,
-      chapters = {
-        {
-          name = function(group)
-            return "Lua module: " .. group
-          end,
-          group = function(node)
-            if node.declaration == nil then
-              return nil
-            end
-            return node.declaration.module
-          end,
-        },
-      },
+      chapters = default_chapters,
     })
     assert.is_nil(err)
 
@@ -145,19 +147,7 @@ return M
       source = {
         patterns = { "lua/test1\\.lua" },
       },
-      chapters = {
-        {
-          name = function(group)
-            return "Lua module: " .. group
-          end,
-          group = function(node)
-            if node.declaration == nil then
-              return nil
-            end
-            return node.declaration.module
-          end,
-        },
-      },
+      chapters = default_chapters,
     })
     assert.is_nil(err)
 
@@ -191,17 +181,7 @@ nnoremap <Leader>f <Cmd>Genvdoc foo<CR>]]
         {
           name = "EXAMPLES",
           body = function()
-            local f = io.open("./example.vim", "r")
-            local lines = {}
-            for line in f:lines() do
-              if line == "" then
-                table.insert(lines, line)
-              else
-                table.insert(lines, ("  %s"):format(line))
-              end
-            end
-            f:close()
-            return (">\n%s\n<"):format(table.concat(lines, "\n"))
+            return require("genvdoc.util").help_code_block_from_file("./example.vim", { language = "vim" })
           end,
         },
       },
@@ -216,7 +196,7 @@ nnoremap <Leader>f <Cmd>Genvdoc foo<CR>]]
 ==============================================================================
 EXAMPLES                                                    *genvdoc-EXAMPLES*
 
->
+>vim
   nnoremap <Leader>h <Cmd>Genvdoc hoge<CR>
   nnoremap <Leader>f <Cmd>Genvdoc foo<CR>
 <
@@ -229,19 +209,7 @@ vim:tw=78:ts=8:ft=help
   it("can generate a document with no chapters", function()
     local err = genvdoc.generate("genvdoc", {
       output_dir = helper.test_data.full_path,
-      chapters = {
-        {
-          name = function(group)
-            return "Lua module: " .. group
-          end,
-          group = function(node)
-            if node.declaration == nil then
-              return nil
-            end
-            return node.declaration.module
-          end,
-        },
-      },
+      chapters = default_chapters,
     })
     assert.is_nil(err)
 
