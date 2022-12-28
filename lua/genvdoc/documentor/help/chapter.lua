@@ -1,5 +1,6 @@
 local Tag = require("genvdoc.documentor.help.tag")
 local Declaration = require("genvdoc.documentor.help.declaration")
+local add_indent = require("genvdoc.documentor.indent").add_indent
 
 local Chapter = {}
 Chapter.__index = Chapter
@@ -29,22 +30,15 @@ function Chapter.build(self, plugin_name, width)
     return table.concat(lines, "\n")
   end
 
-  local last = #self._nodes
-  for i, node in ipairs(self._nodes) do
+  for _, node in ipairs(self._nodes) do
     if node.declaration ~= nil then
       vim.list_extend(lines, Declaration.new(node.declaration):build(node.lines, width))
     else
-      vim.list_extend(
-        lines,
-        vim.tbl_map(function(line)
-          return ("  %s"):format(line)
-        end, node.lines)
-      )
+      vim.list_extend(lines, add_indent(node.lines))
     end
-    if i ~= last then
-      table.insert(lines, "")
-    end
+    table.insert(lines, "")
   end
+  table.remove(lines, #lines)
   return table.concat(lines, "\n")
 end
 

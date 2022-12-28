@@ -1,3 +1,5 @@
+local add_indent = require("genvdoc.documentor.indent").add_indent
+
 local Declaration = {}
 Declaration.__index = Declaration
 
@@ -7,32 +9,30 @@ function Declaration.new(declaration)
 end
 
 function Declaration.build(self, description_lines, width)
-  local title
   local lines = {}
   if self._declaration.type == "command" then
-    vim.list_extend(lines, description_lines)
-
-    title = require("genvdoc.documentor.help.declaration.command").tagged(self._declaration, width)
+    local title = require("genvdoc.documentor.help.declaration.command").tagged(self._declaration, width)
+    lines = {
+      title,
+      unpack(add_indent(description_lines)),
+    }
   elseif self._declaration.type == "method" then
     local parameters = require("genvdoc.documentor.help.declaration.function_parameter").new(self._declaration)
-    vim.list_extend(lines, parameters:build_lines(description_lines))
+
+    local declaration_lines = {}
+    vim.list_extend(declaration_lines, parameters:build_lines(description_lines))
     vim.list_extend(
-      lines,
+      declaration_lines,
       require("genvdoc.documentor.help.declaration.function_return").build_lines(self._declaration)
     )
 
-    title = parameters:tagged(width)
+    local title = parameters:tagged(width)
+    lines = {
+      title,
+      unpack(add_indent(declaration_lines)),
+    }
   end
-
-  local indented_lines = vim.tbl_map(function(line)
-    if line == "" then
-      return line
-    end
-    return ("  %s"):format(line)
-  end, lines)
-  table.insert(indented_lines, 1, title)
-
-  return indented_lines
+  return lines
 end
 
 return Declaration
