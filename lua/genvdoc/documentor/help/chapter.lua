@@ -22,8 +22,11 @@ function Chapter.new(name, group_name, nodes, body)
 end
 
 function Chapter.build(self, plugin_name, width)
-  local tag = Tag.add(self._name, width, plugin_name .. "-" .. self._group_name)
-  local lines = { tag, "" }
+  local lines = {
+    Tag.add(self._name, width, plugin_name .. "-" .. self._group_name),
+    "",
+  }
+
   if self._body then
     local ctx = { plugin_name = plugin_name, width = width }
     table.insert(lines, self._body(ctx))
@@ -39,6 +42,7 @@ function Chapter.build(self, plugin_name, width)
     table.insert(lines, "")
   end
   table.remove(lines, #lines)
+
   return table.concat(lines, "\n")
 end
 

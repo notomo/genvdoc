@@ -9,14 +9,15 @@ function Declaration.new(declaration)
 end
 
 function Declaration.build(self, description_lines, width)
-  local lines = {}
   if self._declaration.type == "command" then
-    local title = require("genvdoc.documentor.help.declaration.command").tagged(self._declaration, width)
-    lines = {
-      title,
+    local tagged_line = require("genvdoc.documentor.help.declaration.command").tagged(self._declaration, width)
+    return {
+      tagged_line,
       unpack(add_indent(description_lines)),
     }
-  elseif self._declaration.type == "method" then
+  end
+
+  if self._declaration.type == "method" then
     local parameters = require("genvdoc.documentor.help.declaration.function_parameter").new(self._declaration)
 
     local declaration_lines = {}
@@ -26,13 +27,14 @@ function Declaration.build(self, description_lines, width)
       require("genvdoc.documentor.help.declaration.function_return").build_lines(self._declaration)
     )
 
-    local title = parameters:tagged(width)
-    lines = {
-      title,
+    local tagged_line = parameters:tagged(width)
+    return {
+      tagged_line,
       unpack(add_indent(declaration_lines)),
     }
   end
-  return lines
+
+  return {}
 end
 
 return Declaration
