@@ -29,21 +29,19 @@ function M.collect(pattern)
 end
 
 function M._parse(query, modules, path)
-  local f = io.open(path, "r")
-  local str = f:read("*a")
-  f:close()
-  local lines = vim.split(str, "\n", true)
+  local str, err = require("genvdoc.lib.file").read_all(path)
+  if err then
+    error(err)
+  end
 
-  local bufnr = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
-  local parser = vim.treesitter.get_parser(bufnr, "lua")
+  local parser = vim.treesitter.get_string_parser(str, "lua")
   local trees, _ = parser:parse()
 
   local ctx = {
     query = query,
     module_name = modules:from_path(path),
-    lines = lines,
-    iterator = require("genvdoc.collector.iterator").new(query:iter_captures(trees[1]:root(), bufnr, 0, -1)),
+    str = str,
+    iterator = require("genvdoc.collector.iterator").new(query:iter_captures(trees[1]:root(), str, 0, -1)),
     results = {},
   }
   while true do
@@ -64,11 +62,6 @@ function M._parse(query, modules, path)
   return ctx.results
 end
 
-local get_matched = function(ctx, id, node)
-  local row, start_col, _, end_col = node:range()
-  return ctx.query.captures[id], ctx.lines[row + 1]:sub(start_col + 1, end_col)
-end
-
 local parse_comment = function(text)
   local _, e = text:find([[^%s*%-%-%-%s?]])
   return text:sub(e + 1)
@@ -80,7 +73,9 @@ function M._parse_comment(ctx, result)
     return false
   end
 
-  local capture_name, text = get_matched(ctx, id, node)
+  local capture_name = ctx.query.captures[id]
+  local text = vim.treesitter.query.get_node_text(node, ctx.str)
+
   if capture_name == "comment" then
     local comment = parse_comment(text)
     table.insert(result.lines, comment)
@@ -106,7 +101,8 @@ function M._search_declaration(ctx, result)
     return false
   end
 
-  local capture_name, text = get_matched(ctx, id, node)
+  local capture_name = ctx.query.captures[id]
+  local text = vim.treesitter.query.get_node_text(node, ctx.str)
 
   if capture_name == "method" then
     result.declaration.name = text
@@ -151,7 +147,9 @@ function M._parse_declaration(ctx, result)
     return false
   end
 
-  local capture_name, text = get_matched(ctx, id, node)
+  local capture_name = ctx.query.captures[id]
+  local text = vim.treesitter.query.get_node_text(node, ctx.str)
+
   if capture_name == "param" then
     table.insert(result.declaration.params, text)
     return M._parse_declaration(ctx, result)
