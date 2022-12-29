@@ -3,6 +3,7 @@ local plugin_name = vim.env.PLUGIN_NAME
 
 local gen = function()
   require("genvdoc").generate(plugin_name, {
+    source = { patterns = { ("lua/%s/init.lua"):format(plugin_name) } },
     chapters = {
       {
         name = function(group)
