@@ -1,5 +1,8 @@
 local M = {}
 
+--- Returns help code block using file.
+--- @param file_path string: used for code block
+--- @param opts table|nil: default {language = nil}
 function M.help_code_block_from_file(file_path, opts)
   vim.validate({ file_path = { file_path, "string" } })
   opts = opts or {}
@@ -18,6 +21,9 @@ function M.help_code_block_from_file(file_path, opts)
   return M.help_code_block(str, opts)
 end
 
+--- Returns help code block using string.
+--- @param str string: used for code block
+--- @param opts table|nil: default {language = ""}
 function M.help_code_block(str, opts)
   opts = opts or {}
   opts.language = opts.language or ""

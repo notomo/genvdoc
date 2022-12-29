@@ -7,8 +7,56 @@ generate({plugin_name}, {opts})                           *genvdoc.generate()*
   Generate a document.
 
   Parameters: ~
-    {plugin_name} (string) 
-    {opts} (table) 
+    {plugin_name} (string) used for document name
+    {opts} (table|nil) { output_dir = (string), source = { patterns = string[] }, chapters = { name = (string|function), group = (function|nil), body = (function|nil) }[] }
+
+==============================================================================
+Lua module: genvdoc.util                                *genvdoc-genvdoc.util*
+
+help_code_block_from_file({file_path}, {opts})
+                                    *genvdoc.util.help_code_block_from_file()*
+  Returns help code block using file.
+
+  Parameters: ~
+    {file_path} (string) used for code block
+    {opts} (table|nil) default {language = nil}
+
+help_code_block({str}, {opts})                *genvdoc.util.help_code_block()*
+  Returns help code block using string.
+
+  Parameters: ~
+    {str} (string) used for code block
+    {opts} (table|nil) default {language = ""}
+
+==============================================================================
+EXAMPLES                                                    *genvdoc-EXAMPLES*
+
+>lua
+  local util = require("genvdoc.util")
+  require("genvdoc").generate("example.nvim", {
+    output_dir = vim.fn.tempname(),
+    source = { patterns = { "lua/genvdoc/test/example_source.lua" } },
+    chapters = {
+      {
+        name = function(group)
+          return "Lua module: " .. group
+        end,
+        group = function(node)
+          if not node.declaration then
+            return nil
+          end
+          return node.declaration.module
+        end,
+      },
+      {
+        name = "EXAMPLES",
+        body = function()
+          return util.help_code_block_from_file("lua/genvdoc/test/example.lua", { language = "lua" })
+        end,
+      },
+    },
+  })
+<
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help

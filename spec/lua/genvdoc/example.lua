@@ -1,10 +1,3 @@
-# genvdoc
-
-neovim plugin help document generator
-
-## Example
-
-```lua
 local util = require("genvdoc.util")
 require("genvdoc").generate("example.nvim", {
   output_dir = vim.fn.tempname(),
@@ -29,4 +22,3 @@ require("genvdoc").generate("example.nvim", {
     },
   },
 })
-```

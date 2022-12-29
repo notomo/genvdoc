@@ -1,23 +1,54 @@
-vim.o.runtimepath = vim.fn.getcwd() .. "," .. vim.o.runtimepath
+local util = require("genvdoc.util")
 local plugin_name = vim.env.PLUGIN_NAME
 
-local gen = function()
-  require("genvdoc").generate(plugin_name, {
-    source = { patterns = { ("lua/%s/init.lua"):format(plugin_name) } },
-    chapters = {
-      {
-        name = function(group)
-          return "Lua module: " .. group
-        end,
-        group = function(node)
-          if node.declaration == nil then
-            return nil
-          end
-          return node.declaration.module
-        end,
-      },
-    },
-  })
-end
+local example_path = ("./spec/lua/%s/example.lua"):format(plugin_name)
+dofile(example_path)
 
-gen()
+require("genvdoc").generate(plugin_name, {
+  source = {
+    patterns = {
+      ("lua/%s/init.lua"):format(plugin_name),
+      ("lua/%s/util.lua"):format(plugin_name),
+    },
+  },
+  chapters = {
+    {
+      name = function(group)
+        return "Lua module: " .. group
+      end,
+      group = function(node)
+        if not node.declaration then
+          return nil
+        end
+        return node.declaration.module
+      end,
+    },
+    {
+      name = "EXAMPLES",
+      body = function()
+        return util.help_code_block_from_file(example_path, { language = "lua" })
+      end,
+    },
+  },
+})
+
+local gen_readme = function()
+  local f = io.open(example_path, "r")
+  local exmaple = f:read("*a")
+  f:close()
+
+  local content = ([[
+# %s
+
+neovim plugin help document generator
+
+## Example
+
+```lua
+%s```]]):format(plugin_name, exmaple)
+
+  local readme = io.open("README.md", "w")
+  readme:write(content)
+  readme:close()
+end
+gen_readme()
