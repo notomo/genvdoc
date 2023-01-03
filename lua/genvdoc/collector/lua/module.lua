@@ -24,7 +24,7 @@ function Modules.from_path(self, path)
   local pattern = "^" .. pathlib.normalize(self._dir_path):gsub("([^%w])", "%%%1")
   local relative_path = pathlib.normalize(module_path):gsub(pattern, "", 1)
 
-  return table.concat(vim.split(relative_path, "/", true), ".")
+  return table.concat(vim.split(relative_path, "/", { plain = true }), ".")
 end
 
 return Modules

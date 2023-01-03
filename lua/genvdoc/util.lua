@@ -35,7 +35,7 @@ function M.indent(str, count)
   vim.validate({ str = { str, "string" }, count = { count, "number" } })
   local indent = (" "):rep(count)
   local lines = {}
-  for _, line in ipairs(vim.split(str, "\n", true)) do
+  for _, line in ipairs(vim.split(str, "\n", { plain = true })) do
     if line == "" then
       table.insert(lines, line)
     else
