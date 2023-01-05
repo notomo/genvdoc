@@ -4,7 +4,16 @@ local M = {}
 
 ---Generate a document.
 ---@param plugin_name string: used for document name
----@param opts table|nil: { output_dir = (string), source = { patterns = string[] }, chapters = { name = (string|function), group = (function|nil), body = (function|nil) }[] }
+---@param opts table|nil:
+---  {
+---    output_dir = (string),
+---    source = { patterns = string[] },
+---    chapters = {
+---      name = (string|function),
+---      group = (function|nil),
+---      body = (function|nil)
+---    }[]
+---  }
 function M.generate(plugin_name, opts)
   opts = require("genvdoc.option").new(opts)
 

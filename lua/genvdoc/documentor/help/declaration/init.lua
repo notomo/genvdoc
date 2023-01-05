@@ -15,7 +15,7 @@ function Declaration.build_lines(declaration, description_lines, width)
 
     return {
       parameters:tagged_line(width),
-      unpack(add_indent(declaration_lines)),
+      unpack(add_indent(declaration_lines, 2)),
     }
   end
 

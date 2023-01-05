@@ -1,17 +1,18 @@
 local Tag = require("genvdoc.documentor.help.tag")
+local add_indent = require("genvdoc.documentor.indent").add_indent
 
 local M = {}
 M.__index = M
 
 function M.new(declaration)
   local params_except_self = vim.tbl_filter(function(param)
-    return param ~= "self"
+    return param.name ~= "self"
   end, declaration.params)
 
   local params = vim.tbl_map(function(param)
-    return ("{%s}"):format(param)
+    return ("{%s}"):format(param.name)
   end, params_except_self)
-  if declaration.has_variadic then
+  if declaration.variadic_param then
     table.insert(params, "{...}")
   end
 
@@ -19,14 +20,14 @@ function M.new(declaration)
     _declaration = declaration,
     _params_except_self = params_except_self,
     _params = params,
+    _has_self = #declaration.params > #params_except_self,
   }
   return setmetatable(tbl, M)
 end
 
 function M.tagged_line(self, width)
-  local has_self_param = self._declaration.params[1] == "self"
   local name
-  if has_self_param then
+  if self._has_self then
     name = ("%s:%s()"):format(self._declaration.module, self._declaration.name)
   else
     name = ("%s.%s()"):format(self._declaration.module, self._declaration.name)
@@ -42,22 +43,17 @@ function M.build_lines(self, description_lines)
     table.insert(lines, "Parameters: ~")
   end
 
-  for i, param in ipairs(self._params_except_self) do
-    local comment = self._declaration.param_lines[i] or "TODO"
-    local factors = vim.split(comment, "%s+")
-    local typ = (factors[2] or "TODO"):gsub(":", "")
-    local desc = table.concat(vim.list_slice(factors, 3), " ")
-    local line = ("  {%s} (%s) %s"):format(param, typ, desc)
+  for _, param in ipairs(self._params_except_self) do
+    local line = ("  {%s} (%s) %s"):format(param.name, param.type, param.descriptions[1])
     table.insert(lines, line)
+    vim.list_extend(lines, add_indent(vim.list_slice(param.descriptions, 2), 4))
   end
 
-  if self._declaration.has_variadic then
-    local comment = self._declaration.param_lines[#self._declaration.param_lines] or "TODO"
-    local factors = vim.split(comment, "%s+")
-    local typ = (factors[1] or "TODO"):gsub(":", "")
-    local desc = table.concat(vim.list_slice(factors, 2), " ")
-    local line = ("  {%s} (%s) %s"):format("...", typ, desc)
+  if self._declaration.variadic_param then
+    local param = self._declaration.variadic_param
+    local line = ("  {...} (%s) %s"):format(param.type, param.descriptions[1])
     table.insert(lines, line)
+    vim.list_extend(lines, add_indent(vim.list_slice(param.descriptions, 2), 4))
   end
 
   return lines

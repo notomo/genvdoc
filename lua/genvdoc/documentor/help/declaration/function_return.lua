@@ -1,3 +1,5 @@
+local add_indent = require("genvdoc.documentor.indent").add_indent
+
 local M = {}
 
 function M.build_lines(declaration)
@@ -7,11 +9,9 @@ function M.build_lines(declaration)
     table.insert(lines, "Return: ~")
   end
   for _, ret in ipairs(declaration.returns) do
-    local factors = vim.split(ret, "%s+")
-    local typ = (factors[1] or "TODO"):gsub(":", "")
-    local desc = table.concat(vim.list_slice(factors, 2), " ")
-    local line = ("  (%s) %s"):format(typ, desc)
+    local line = ("  (%s) %s"):format(ret.type, ret.descriptions[1])
     table.insert(lines, line)
+    vim.list_extend(lines, add_indent(vim.list_slice(ret.descriptions, 2), 4))
   end
   return lines
 end

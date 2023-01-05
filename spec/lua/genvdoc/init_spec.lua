@@ -34,14 +34,18 @@ local M = {}
 
 --- Inspect a tbl.
 --- @param tbl table: a target table
+---   param1 description
 --- @vararg any: variadic
+---   variadic description
 --- @return string: inspected
+---   return description
 function M.inspect(tbl, ...)
   return vim.inspect(tbl)
 end
 
 --- Inspect2.
 --- @param arg1 table: the first argument
+---   param1 description
 function M.inspect2(self, arg1)
   return vim.inspect()
 end
@@ -91,16 +95,20 @@ inspect({tbl}, {...})                                      *genvdoc.inspect()*
 
   Parameters: ~
     {tbl} (table) a target table
+        param1 description
     {...} (any) variadic
+        variadic description
 
   Return: ~
     (string) inspected
+        return description
 
 inspect2({arg1})                                          *genvdoc:inspect2()*
   Inspect2.
 
   Parameters: ~
     {arg1} (table) the first argument
+        param1 description
 
 inspect4({tbl})                                           *genvdoc.inspect4()*
   Inspect4.

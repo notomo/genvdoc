@@ -49,9 +49,7 @@ function M._parse(query, modules, path)
       lines = {},
       declaration = {
         params = {},
-        param_lines = {},
         returns = {},
-        has_variadic = false,
       },
     }
     local ok = M._parse_comment(ctx, result)
@@ -95,6 +93,37 @@ local parse_annotation = function(name, comment)
   return comment:sub(e + 1)
 end
 
+local parse_param_line = function(line)
+  local factors = vim.split(line, "%s+")
+  local typ = (factors[2] or "TODO"):gsub(":", "")
+  local description = table.concat(vim.list_slice(factors, 3), " ")
+  return {
+    name = factors[1],
+    type = typ,
+    descriptions = { description },
+  }
+end
+
+local parse_variadic_param_line = function(line)
+  local factors = vim.split(line, "%s+")
+  local typ = (factors[1] or "TODO"):gsub(":", "")
+  local description = table.concat(vim.list_slice(factors, 2), " ")
+  return {
+    type = typ,
+    descriptions = { description },
+  }
+end
+
+local parse_return_line = function(line)
+  local factors = vim.split(line, "%s+")
+  local typ = (factors[1] or "TODO"):gsub(":", "")
+  local description = table.concat(vim.list_slice(factors, 2), " ")
+  return {
+    type = typ,
+    descriptions = { description },
+  }
+end
+
 function M._search_declaration(ctx, result)
   local id, node = ctx.iterator:next()
   if not id then
@@ -114,23 +143,31 @@ function M._search_declaration(ctx, result)
   if capture_name == "comment" then
     local comment = parse_comment(text)
 
-    local param = parse_annotation("param", comment)
-    if param then
-      table.insert(result.declaration.param_lines, param)
-      return M._search_declaration(ctx, result)
+    local param_line = parse_annotation("param", comment)
+    if param_line then
+      local param = parse_param_line(param_line)
+      table.insert(result.declaration.params, param)
+      return M._collect_declaration_description(ctx, result, function(description)
+        table.insert(param.descriptions, description)
+      end)
     end
 
-    local vararg = parse_annotation("vararg", comment)
-    if vararg then
-      result.declaration.has_variadic = true
-      table.insert(result.declaration.param_lines, vararg)
-      return M._search_declaration(ctx, result)
+    local vararg_line = parse_annotation("vararg", comment)
+    if vararg_line then
+      local param = parse_variadic_param_line(vararg_line)
+      result.declaration.variadic_param = param
+      return M._collect_declaration_description(ctx, result, function(description)
+        table.insert(param.descriptions, description)
+      end)
     end
 
-    local return_ = parse_annotation("return", comment)
-    if return_ then
+    local return_line = parse_annotation("return", comment)
+    if return_line then
+      local return_ = parse_return_line(return_line)
       table.insert(result.declaration.returns, return_)
-      return M._search_declaration(ctx, result)
+      return M._collect_declaration_description(ctx, result, function(description)
+        table.insert(return_.descriptions, description)
+      end)
     end
 
     table.insert(result.lines, comment)
@@ -138,6 +175,28 @@ function M._search_declaration(ctx, result)
   end
 
   return true
+end
+
+function M._collect_declaration_description(ctx, result, add_description)
+  local id, node = ctx.iterator:next()
+  if not id then
+    return false
+  end
+
+  local capture_name = ctx.query.captures[id]
+  local text = vim.treesitter.query.get_node_text(node, ctx.str)
+
+  if capture_name == "comment" then
+    local comment = parse_comment(text)
+    if not vim.startswith(comment, "@") then
+      add_description(comment)
+      return M._collect_declaration_description(ctx, result, add_description)
+    end
+  end
+
+  ctx.iterator:back()
+
+  return M._search_declaration(ctx, result)
 end
 
 function M._parse_declaration(ctx, result)
@@ -151,7 +210,14 @@ function M._parse_declaration(ctx, result)
   local text = vim.treesitter.query.get_node_text(node, ctx.str)
 
   if capture_name == "param" then
-    table.insert(result.declaration.params, text)
+    if text == "self" then
+      local param = {
+        name = text,
+        type = "self",
+        descriptions = {},
+      }
+      table.insert(result.declaration.params, 1, param)
+    end
     return M._parse_declaration(ctx, result)
   end
 

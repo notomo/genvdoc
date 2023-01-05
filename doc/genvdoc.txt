@@ -8,7 +8,16 @@ generate({plugin_name}, {opts})                           *genvdoc.generate()*
 
   Parameters: ~
     {plugin_name} (string) used for document name
-    {opts} (table|nil) { output_dir = (string), source = { patterns = string[] }, chapters = { name = (string|function), group = (function|nil), body = (function|nil) }[] }
+    {opts} (table|nil) 
+       {
+         output_dir = (string),
+         source = { patterns = string[] },
+         chapters = {
+           name = (string|function),
+           group = (function|nil),
+           body = (function|nil)
+         }[]
+       }
 
 ==============================================================================
 Lua module: genvdoc.util                                *genvdoc-genvdoc.util*
