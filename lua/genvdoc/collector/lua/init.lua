@@ -83,6 +83,10 @@ function M._parse_comment(ctx, result)
   return true
 end
 
+local is_annotation = function(comment)
+  return not vim.startswith(comment, "@")
+end
+
 local parse_annotation = function(name, comment)
   if not vim.startswith(comment, "@" .. name .. " ") then
     return nil
@@ -93,25 +97,26 @@ local parse_annotation = function(name, comment)
   return comment:sub(e + 1)
 end
 
+local new_parameter = function(name, typ, description)
+  return {
+    name = name,
+    type = typ,
+    descriptions = { description },
+  }
+end
+
 local parse_param_line = function(line)
   local factors = vim.split(line, "%s+")
   local typ = (factors[2] or "TODO"):gsub(":", "")
   local description = table.concat(vim.list_slice(factors, 3), " ")
-  return {
-    name = factors[1],
-    type = typ,
-    descriptions = { description },
-  }
+  return new_parameter(factors[1], typ, description)
 end
 
 local parse_variadic_param_line = function(line)
   local factors = vim.split(line, "%s+")
   local typ = (factors[1] or "TODO"):gsub(":", "")
   local description = table.concat(vim.list_slice(factors, 2), " ")
-  return {
-    type = typ,
-    descriptions = { description },
-  }
+  return new_parameter("...", typ, description)
 end
 
 local parse_return_line = function(line)
@@ -155,7 +160,7 @@ function M._search_declaration(ctx, result)
     local vararg_line = parse_annotation("vararg", comment)
     if vararg_line then
       local param = parse_variadic_param_line(vararg_line)
-      result.declaration.variadic_param = param
+      table.insert(result.declaration.params, param)
       return M._collect_declaration_description(ctx, result, function(description)
         table.insert(param.descriptions, description)
       end)
@@ -188,7 +193,7 @@ function M._collect_declaration_description(ctx, result, add_description)
 
   if capture_name == "comment" then
     local comment = parse_comment(text)
-    if not vim.startswith(comment, "@") then
+    if is_annotation(comment) then
       add_description(comment)
       return M._collect_declaration_description(ctx, result, add_description)
     end
@@ -211,11 +216,7 @@ function M._parse_declaration(ctx, result)
 
   if capture_name == "param" then
     if text == "self" then
-      local param = {
-        name = text,
-        type = "self",
-        descriptions = {},
-      }
+      local param = new_parameter("self", "self")
       table.insert(result.declaration.params, 1, param)
     end
     return M._parse_declaration(ctx, result)

@@ -12,9 +12,6 @@ function M.new(declaration)
   local params = vim.tbl_map(function(param)
     return ("{%s}"):format(param.name)
   end, params_except_self)
-  if declaration.variadic_param then
-    table.insert(params, "{...}")
-  end
 
   local tbl = {
     _declaration = declaration,
@@ -45,13 +42,6 @@ function M.build_lines(self, description_lines)
 
   for _, param in ipairs(self._params_except_self) do
     local line = ("  {%s} (%s) %s"):format(param.name, param.type, param.descriptions[1])
-    table.insert(lines, line)
-    vim.list_extend(lines, add_indent(vim.list_slice(param.descriptions, 2), 4))
-  end
-
-  if self._declaration.variadic_param then
-    local param = self._declaration.variadic_param
-    local line = ("  {...} (%s) %s"):format(param.type, param.descriptions[1])
     table.insert(lines, line)
     vim.list_extend(lines, add_indent(vim.list_slice(param.descriptions, 2), 4))
   end
