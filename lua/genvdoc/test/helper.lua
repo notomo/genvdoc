@@ -17,11 +17,22 @@ end
 
 local asserts = require("vusted.assert").asserts
 
-asserts.create("content"):register_eq(function(file_path)
-  local f = io.open(file_path, "r")
-  local expected = f:read("*a")
-  f:close()
-  return "\n" .. expected
+asserts.create("content"):register(function(self)
+  return function(_, args)
+    local file_path = args[1]
+    local f = io.open(file_path, "r")
+    local expected = f:read("*a")
+    f:close()
+
+    local actual = args[2]
+
+    local diff = vim.diff(actual, expected, {})
+
+    self:set_positive(("diff exists: actual(+), expected(-)\n%s"):format(diff))
+    self:set_negative("diff does not exists")
+
+    return diff == ""
+  end
 end)
 
 return helper

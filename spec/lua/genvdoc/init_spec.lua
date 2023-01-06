@@ -84,7 +84,9 @@ return M
     assert.is_nil(err)
 
     local file_path = helper.test_data.full_path .. "genvdoc.txt"
-    assert.content(file_path, "\n" .. [[
+    assert.content(
+      file_path,
+      [[
 *genvdoc.txt*
 
 ==============================================================================
@@ -124,7 +126,8 @@ other()                                                *genvdoc.other.other()*
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help
-]])
+]]
+    )
   end)
 
   it("can select source files by pattern", function()
@@ -161,7 +164,9 @@ return M
 
     local file_path = helper.test_data.full_path .. "genvdoc.txt"
 
-    assert.content(file_path, "\n" .. [[
+    assert.content(
+      file_path,
+      [[
 *genvdoc.txt*
 
 ==============================================================================
@@ -172,7 +177,8 @@ f1()                                                              *test1.f1()*
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help
-]])
+]]
+    )
   end)
 
   it("can add examples to the doc", function()
@@ -198,7 +204,9 @@ nnoremap <Leader>f <Cmd>Genvdoc foo<CR>]]
     assert.is_nil(err)
 
     local file_path = helper.test_data.full_path .. "genvdoc.txt"
-    assert.content(file_path, "\n" .. [[
+    assert.content(
+      file_path,
+      [[
 *genvdoc.txt*
 
 ==============================================================================
@@ -211,7 +219,8 @@ EXAMPLES                                                    *genvdoc-EXAMPLES*
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help
-]])
+]]
+    )
   end)
 
   it("can generate a document with no chapters", function()
@@ -222,12 +231,15 @@ vim:tw=78:ts=8:ft=help
     assert.is_nil(err)
 
     local file_path = helper.test_data.full_path .. "genvdoc.txt"
-    assert.content(file_path, "\n" .. [[
+    assert.content(
+      file_path,
+      [[
 *genvdoc.txt*
 
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help
-]])
+]]
+    )
   end)
 end)
