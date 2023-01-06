@@ -9,7 +9,7 @@ function M.collect(pattern)
     [[
 ((comment) @comment (match? @comment "^---"))
 (function_declaration
-  name: (_ field: (identifier) @method)
+  name: (_ field: (identifier) @function)
   parameters: (_ name: (identifier) @param)
 )
 ]]
@@ -37,17 +37,24 @@ function M._parse(query, modules, path)
   local parser = vim.treesitter.get_string_parser(str, "lua")
   local trees, _ = parser:parse()
 
+  local module_name = modules:from_path(path)
   local ctx = {
-    query = query,
-    module_name = modules:from_path(path),
-    str = str,
     iterator = require("genvdoc.collector.iterator").new(query:iter_captures(trees[1]:root(), str, 0, -1)),
+    get_node_text = function(node)
+      return vim.treesitter.query.get_node_text(node, str)
+    end,
+    get_capture_name = function(id)
+      return query.captures[id]
+    end,
     results = {},
   }
   while true do
     local result = {
       lines = {},
       declaration = {
+        module = module_name,
+        name = nil,
+        type = nil,
         params = {},
         returns = {},
       },
@@ -71,8 +78,8 @@ function M._parse_comment(ctx, result)
     return false
   end
 
-  local capture_name = ctx.query.captures[id]
-  local text = vim.treesitter.query.get_node_text(node, ctx.str)
+  local capture_name = ctx.get_capture_name(id)
+  local text = ctx.get_node_text(node)
 
   if capture_name == "comment" then
     local comment = parse_comment(text)
@@ -135,13 +142,12 @@ function M._search_declaration(ctx, result)
     return false
   end
 
-  local capture_name = ctx.query.captures[id]
-  local text = vim.treesitter.query.get_node_text(node, ctx.str)
+  local capture_name = ctx.get_capture_name(id)
+  local text = ctx.get_node_text(node)
 
-  if capture_name == "method" then
+  if capture_name == "function" then
     result.declaration.name = text
-    result.declaration.type = "method"
-    result.declaration.module = ctx.module_name
+    result.declaration.type = "function"
     return M._parse_declaration(ctx, result)
   end
 
@@ -188,8 +194,8 @@ function M._collect_declaration_description(ctx, result, add_description)
     return false
   end
 
-  local capture_name = ctx.query.captures[id]
-  local text = vim.treesitter.query.get_node_text(node, ctx.str)
+  local capture_name = ctx.get_capture_name(id)
+  local text = ctx.get_node_text(node)
 
   if capture_name == "comment" then
     local comment = parse_comment(text)
@@ -211,8 +217,8 @@ function M._parse_declaration(ctx, result)
     return false
   end
 
-  local capture_name = ctx.query.captures[id]
-  local text = vim.treesitter.query.get_node_text(node, ctx.str)
+  local capture_name = ctx.get_capture_name(id)
+  local text = ctx.get_node_text(node)
 
   if capture_name == "param" then
     if text == "self" then
