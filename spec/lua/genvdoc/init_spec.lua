@@ -20,8 +20,6 @@ describe("genvdoc", function()
   after_each(helper.after_each)
 
   it("can generate a help document", function()
-    helper.test_data:create_dir("lua")
-    helper.test_data:create_dir("lua/genvdoc")
     helper.test_data:create_file(
       "lua/genvdoc/init.lua",
       [[
@@ -131,7 +129,6 @@ vim:tw=78:ts=8:ft=help
   end)
 
   it("can select source files by pattern", function()
-    helper.test_data:create_dir("lua")
     helper.test_data:create_file(
       "lua/test1.lua",
       [[
