@@ -12,7 +12,6 @@ function helper.after_each()
   helper.cleanup()
   helper.cleanup_loaded_modules(plugin_name)
   helper.test_data:teardown()
-  print(" ")
 end
 
 local asserts = require("vusted.assert").asserts
