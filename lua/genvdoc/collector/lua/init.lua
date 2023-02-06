@@ -4,7 +4,7 @@ local Modules = require("genvdoc.collector.lua.module")
 local M = {}
 
 function M.collect(pattern)
-  local query = vim.treesitter.parse_query(
+  local query = vim.treesitter.query.parse_query(
     "lua",
     [[
 ((comment) @comment (match? @comment "^---"))
