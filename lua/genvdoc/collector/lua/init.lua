@@ -113,7 +113,7 @@ function M._parse_comment(ctx, result)
 end
 
 local is_annotation = function(comment)
-  return not vim.startswith(comment, "@")
+  return vim.startswith(comment, "@")
 end
 
 local parse_annotation = function(name, comment)
@@ -229,7 +229,7 @@ function M._collect_declaration_description(ctx, result, add_description)
 
   if capture_name == "comment" then
     local comment = parse_comment(text)
-    if is_annotation(comment) then
+    if not is_annotation(comment) then
       add_description(comment)
       return M._collect_declaration_description(ctx, result, add_description)
     end
