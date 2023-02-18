@@ -38,8 +38,26 @@ function M._parse(query, modules, path)
   local trees, _ = parser:parse()
 
   local module_name = modules:from_path(path)
+  local iterator = require("genvdoc.collector.iterator").new(query:iter_captures(trees[1]:root(), str, 0, -1))
+  local current_node, last_node
   local ctx = {
-    iterator = require("genvdoc.collector.iterator").new(query:iter_captures(trees[1]:root(), str, 0, -1)),
+    iterator_next = function()
+      local id, node = iterator:next()
+      last_node = current_node
+      current_node = node
+      return id, node
+    end,
+    iterator_back = function()
+      return iterator:back()
+    end,
+    is_continuous_line = function(node)
+      if not last_node then
+        return true
+      end
+      local first_row = node:start()
+      local last_row = last_node:end_()
+      return first_row <= last_row + 1
+    end,
     get_node_text = function(node)
       return vim.treesitter.query.get_node_text(node, str)
     end,
@@ -73,9 +91,13 @@ local parse_comment = function(text)
 end
 
 function M._parse_comment(ctx, result)
-  local id, node = ctx.iterator:next()
+  local id, node = ctx.iterator_next()
   if not id then
     return false
+  end
+  if not ctx.is_continuous_line(node) then
+    ctx.iterator_back()
+    return true
   end
 
   local capture_name = ctx.get_capture_name(id)
@@ -137,9 +159,13 @@ local parse_return_line = function(line)
 end
 
 function M._search_declaration(ctx, result)
-  local id, node = ctx.iterator:next()
+  local id, node = ctx.iterator_next()
   if not id then
     return false
+  end
+  if not ctx.is_continuous_line(node) then
+    ctx.iterator_back()
+    return true
   end
 
   local capture_name = ctx.get_capture_name(id)
@@ -189,9 +215,13 @@ function M._search_declaration(ctx, result)
 end
 
 function M._collect_declaration_description(ctx, result, add_description)
-  local id, node = ctx.iterator:next()
+  local id, node = ctx.iterator_next()
   if not id then
     return false
+  end
+  if not ctx.is_continuous_line(node) then
+    ctx.iterator_back()
+    return true
   end
 
   local capture_name = ctx.get_capture_name(id)
@@ -205,13 +235,13 @@ function M._collect_declaration_description(ctx, result, add_description)
     end
   end
 
-  ctx.iterator:back()
+  ctx.iterator_back()
 
   return M._search_declaration(ctx, result)
 end
 
 function M._parse_declaration(ctx, result)
-  local id, node = ctx.iterator:next()
+  local id, node = ctx.iterator_next()
   if not id then
     table.insert(ctx.results, result)
     return false
@@ -229,7 +259,7 @@ function M._parse_declaration(ctx, result)
   end
 
   table.insert(ctx.results, result)
-  ctx.iterator:back()
+  ctx.iterator_back()
 
   return true
 end

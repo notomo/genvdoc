@@ -30,6 +30,9 @@ end
 
 local M = {}
 
+--- Ignored comment
+--- Ignored comment
+
 --- Inspect a tbl.
 --- @param tbl table: a target table
 ---   param1 description
@@ -48,15 +51,24 @@ function M.inspect2(self, arg1)
   return vim.inspect()
 end
 
+--- Ignored comment
+--- Ignored comment
+
 function M.inspect3(_param)
   return vim.inspect()
 end
+
+--- Ignored comment
+--- Ignored comment
 
 --- Inspect4.
 --- @param tbl table: a target table
 function M.inspect4(tbl)
   return vim.inspect()
 end
+
+--- Ignored comment
+--- Ignored comment
 
 return M
 ]]
