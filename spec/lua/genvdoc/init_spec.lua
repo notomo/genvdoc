@@ -7,7 +7,7 @@ local default_chapters = {
       return "Lua module: " .. group
     end,
     group = function(node)
-      if node.declaration == nil then
+      if node.declaration == nil or node.declaration.type ~= "function" then
         return nil
       end
       return node.declaration.module
@@ -29,6 +29,10 @@ function ignored.inspect()
 end
 
 local M = {}
+
+--- @class Test
+--- @field field1 string field1 description
+--- @field field2 number field2 description
 
 --- Ignored comment
 --- Ignored comment
@@ -87,9 +91,19 @@ return M
 ]]
     )
 
+    local chapters = vim.deepcopy(default_chapters)
+    table.insert(chapters, {
+      name = "STRUCTURE",
+      group = function(node)
+        if node.declaration == nil or node.declaration.type ~= "class" then
+          return nil
+        end
+        return "STRUCTURE"
+      end,
+    })
     local err = genvdoc.generate("genvdoc", {
       output_dir = helper.test_data.full_path,
-      chapters = default_chapters,
+      chapters = chapters,
     })
     assert.is_nil(err)
 
@@ -133,6 +147,14 @@ Lua module: genvdoc.other                              *genvdoc-genvdoc.other*
 
 other()                                                *genvdoc.other.other()*
   Other.
+
+==============================================================================
+STRUCTURE                                                  *genvdoc-STRUCTURE*
+
+Test                                                            *genvdoc.Test*
+
+- {field1} (string) field1 description
+- {field2} (number) field2 description
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help

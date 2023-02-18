@@ -19,6 +19,14 @@ function Declaration.build_lines(declaration, description_lines, width)
     }
   end
 
+  if declaration.type == "class" then
+    local class = require("genvdoc.documentor.help.declaration.class").new(declaration)
+    return {
+      class:tagged_line(width),
+      unpack(class:build_lines()),
+    }
+  end
+
   return {}
 end
 

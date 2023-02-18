@@ -22,28 +22,33 @@ function Chapter.new(name, group_name, nodes, body)
 end
 
 function Chapter.build(self, plugin_name, width)
-  local lines = {
+  local all_lines = {
     Tag.add(self._name, width, plugin_name .. "-" .. self._group_name),
     "",
   }
 
   if self._body then
     local ctx = { plugin_name = plugin_name, width = width }
-    table.insert(lines, self._body(ctx))
-    return table.concat(lines, "\n")
+    table.insert(all_lines, self._body(ctx))
+    return table.concat(all_lines, "\n")
   end
 
   for _, node in ipairs(self._nodes) do
+    local lines
     if node.declaration ~= nil then
-      vim.list_extend(lines, Declaration.build_lines(node.declaration, node.lines, width))
+      lines = Declaration.build_lines(node.declaration, node.lines, width)
     else
-      vim.list_extend(lines, add_indent(node.lines, 2))
+      lines = add_indent(node.lines, 2)
     end
-    table.insert(lines, "")
-  end
-  table.remove(lines, #lines)
 
-  return table.concat(lines, "\n")
+    vim.list_extend(all_lines, lines)
+    if #lines > 0 then
+      table.insert(all_lines, "")
+    end
+  end
+  table.remove(all_lines, #all_lines)
+
+  return table.concat(all_lines, "\n")
 end
 
 return Chapter

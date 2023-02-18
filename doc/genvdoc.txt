@@ -8,16 +8,7 @@ generate({plugin_name}, {opts})                           *genvdoc.generate()*
 
   Parameters: ~
     {plugin_name} (string) used for document name
-    {opts} (table|nil) 
-       {
-         output_dir = (string),
-         source = { patterns = string[] },
-         chapters = {
-           name = (string|function),
-           group = (function|nil),
-           body = (function|nil)
-         }[]
-       }
+    {opts} (GenerateOption?) |genvdoc.GenerateOption|
 
 ==============================================================================
 Lua module: genvdoc.util                                *genvdoc-genvdoc.util*
@@ -38,6 +29,34 @@ help_code_block({str}, {opts})                *genvdoc.util.help_code_block()*
     {opts} (table|nil) default {language = ""}
 
 ==============================================================================
+STRUCTURE                                                  *genvdoc-STRUCTURE*
+
+GenerateOption                                        *genvdoc.GenerateOption*
+
+- {output_dir} (string?) output directory path (default: "./doc/")
+- {source} (GenerateSource?) |genvdoc.GenerateSource|
+- {chapters} ((GenerateChapter[])?) |genvdoc.GenerateChapter|
+
+GenerateSource                                        *genvdoc.GenerateSource*
+
+- {patterns} (string[]) glob patterns to collect document source (default: { "lua/**/*.lua" })
+
+GenerateChapter                                      *genvdoc.GenerateChapter*
+
+- {name} (string|fun(group:string):string) chapter name
+- {group} ((fun(node:GenvdocNode):string?)?) chapter grouping
+- {body} ((fun():string)?) returns chapter body string
+
+GenvdocNode                                              *genvdoc.GenvdocNode*
+
+- {declaration} (GenvdocDeclaration?)
+
+GenvdocDeclaration                                *genvdoc.GenvdocDeclaration*
+
+- {type} ("function"|"class")
+- {module} (string) module name including this declaration
+
+==============================================================================
 EXAMPLES                                                    *genvdoc-EXAMPLES*
 
 >lua
@@ -51,10 +70,19 @@ EXAMPLES                                                    *genvdoc-EXAMPLES*
           return "Lua module: " .. group
         end,
         group = function(node)
-          if not node.declaration then
+          if node.declaration == nil or node.declaration.type ~= "function" then
             return nil
           end
           return node.declaration.module
+        end,
+      },
+      {
+        name = "STRUCTURE",
+        group = function(node)
+          if node.declaration == nil or node.declaration.type ~= "class" then
+            return nil
+          end
+          return "STRUCTURE"
         end,
       },
       {

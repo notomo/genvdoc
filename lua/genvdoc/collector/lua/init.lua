@@ -73,8 +73,13 @@ function M._parse(query, modules, path)
         module = module_name,
         name = nil,
         type = nil,
+
+        -- type: function
         params = {},
         returns = {},
+
+        -- type: class
+        fields = {},
       },
     }
     local ok = M._parse_comment(ctx, result)
@@ -88,6 +93,10 @@ end
 local parse_comment = function(text)
   local _, e = text:find([[^%s*%-%-%-%s?]])
   return text:sub(e + 1)
+end
+
+local is_annotation = function(comment)
+  return vim.startswith(comment, "@")
 end
 
 function M._parse_comment(ctx, result)
@@ -105,15 +114,17 @@ function M._parse_comment(ctx, result)
 
   if capture_name == "comment" then
     local comment = parse_comment(text)
+
+    if is_annotation(comment) then
+      ctx.iterator_back()
+      return M._search_declaration(ctx, result)
+    end
+
     table.insert(result.lines, comment)
     return M._search_declaration(ctx, result)
   end
 
   return true
-end
-
-local is_annotation = function(comment)
-  return vim.startswith(comment, "@")
 end
 
 local parse_annotation = function(name, comment)
@@ -158,6 +169,20 @@ local parse_return_line = function(line)
   }
 end
 
+local parse_field_line = function(line)
+  local factors = vim.split(line, "%s+")
+  local typ = factors[2]
+  local description = table.concat(vim.list_slice(factors, 3), " ")
+  if description == "" then
+    description = nil
+  end
+  return {
+    name = factors[1],
+    type = typ,
+    descriptions = { description },
+  }
+end
+
 function M._search_declaration(ctx, result)
   local id, node = ctx.iterator_next()
   if not id then
@@ -179,6 +204,13 @@ function M._search_declaration(ctx, result)
 
   if capture_name == "comment" then
     local comment = parse_comment(text)
+
+    local class_name = parse_annotation("class", comment)
+    if class_name then
+      result.declaration.name = class_name
+      result.declaration.type = "class"
+      return M._collect_class_fields(ctx, result)
+    end
 
     local param_line = parse_annotation("param", comment)
     if param_line then
@@ -238,6 +270,43 @@ function M._collect_declaration_description(ctx, result, add_description)
   ctx.iterator_back()
 
   return M._search_declaration(ctx, result)
+end
+
+function M._collect_class_fields(ctx, result, add_description)
+  local id, node = ctx.iterator_next()
+  if not id then
+    table.insert(ctx.results, result)
+    return false
+  end
+  if not ctx.is_continuous_line(node) then
+    table.insert(ctx.results, result)
+    ctx.iterator_back()
+    return true
+  end
+
+  local capture_name = ctx.get_capture_name(id)
+  local text = ctx.get_node_text(node)
+
+  if capture_name == "comment" then
+    local comment = parse_comment(text)
+
+    local field_line = parse_annotation("field", comment)
+    if field_line then
+      local field = parse_field_line(field_line)
+      table.insert(result.declaration.fields, field)
+      return M._collect_class_fields(ctx, result, function(description)
+        table.insert(field.descriptions, description)
+      end)
+    end
+
+    add_description(comment)
+    return M._collect_class_fields(ctx, result, add_description)
+  end
+
+  table.insert(ctx.results, result)
+  ctx.iterator_back()
+
+  return true
 end
 
 function M._parse_declaration(ctx, result)
