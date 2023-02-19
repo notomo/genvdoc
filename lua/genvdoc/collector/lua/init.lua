@@ -147,21 +147,21 @@ end
 
 local parse_param_line = function(line)
   local factors = vim.split(line, "%s+")
-  local typ = (factors[2] or "TODO"):gsub(":", "")
+  local typ = (factors[2] or "TODO"):gsub(":$", "")
   local description = table.concat(vim.list_slice(factors, 3), " ")
   return new_parameter(factors[1], typ, description)
 end
 
 local parse_variadic_param_line = function(line)
   local factors = vim.split(line, "%s+")
-  local typ = (factors[1] or "TODO"):gsub(":", "")
+  local typ = (factors[1] or "TODO"):gsub(":$", "")
   local description = table.concat(vim.list_slice(factors, 2), " ")
   return new_parameter("...", typ, description)
 end
 
 local parse_return_line = function(line)
   local factors = vim.split(line, "%s+")
-  local typ = (factors[1] or "TODO"):gsub(":", "")
+  local typ = (factors[1] or "TODO"):gsub(":$", "")
   local description = table.concat(vim.list_slice(factors, 2), " ")
   return {
     type = typ,
