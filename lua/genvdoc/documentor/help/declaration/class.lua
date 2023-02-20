@@ -12,8 +12,8 @@ function M.new(declaration)
 end
 
 function M.tagged_line(self, width)
-  local name = ("%s.%s"):format(self._declaration.module, self._declaration.name)
-  return Tag.add(self._declaration.name, width, name)
+  local name = self._declaration.name
+  return Tag.add(name, width, name)
 end
 
 function M.build_lines(self)

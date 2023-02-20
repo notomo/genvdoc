@@ -8,7 +8,7 @@ generate({plugin_name}, {opts})                           *genvdoc.generate()*
 
   Parameters: ~
     {plugin_name} (string) used for document name
-    {opts} (GenerateOption?) |genvdoc.GenerateOption|
+    {opts} (genvdoc_generate_option?) |genvdoc_generate_option|
 
 ==============================================================================
 Lua module: genvdoc.util                                *genvdoc-genvdoc.util*
@@ -31,27 +31,27 @@ help_code_block({str}, {opts})                *genvdoc.util.help_code_block()*
 ==============================================================================
 STRUCTURE                                                  *genvdoc-STRUCTURE*
 
-GenerateOption                                        *genvdoc.GenerateOption*
+genvdoc_generate_option                              *genvdoc_generate_option*
 
 - {output_dir} (string?) output directory path (default: "./doc/")
-- {source} (GenerateSource?) |genvdoc.GenerateSource|
-- {chapters} ((GenerateChapter[])?) |genvdoc.GenerateChapter|
+- {source} (genvdoc_source_option?) |genvdoc_source_option|
+- {chapters} ((genvdoc_chapter_option[])?) |genvdoc_chapter_option|
 
-GenerateSource                                        *genvdoc.GenerateSource*
+genvdoc_source_option                                  *genvdoc_source_option*
 
 - {patterns} (string[]) glob patterns to collect document source (default: { "lua/**/*.lua" })
 
-GenerateChapter                                      *genvdoc.GenerateChapter*
+genvdoc_chapter_option                                *genvdoc_chapter_option*
 
 - {name} (string|fun(group:string):string) chapter name
-- {group} ((fun(node:GenvdocNode):string?)?) chapter grouping
+- {group} ((fun(node:genvdoc_node):string?)?) chapter grouping
 - {body} ((fun():string)?) returns chapter body string
 
-GenvdocNode                                              *genvdoc.GenvdocNode*
+genvdoc_node                                                    *genvdoc_node*
 
-- {declaration} (GenvdocDeclaration?)
+- {declaration} (genvdoc_declaration?)
 
-GenvdocDeclaration                                *genvdoc.GenvdocDeclaration*
+genvdoc_declaration                                      *genvdoc_declaration*
 
 - {type} ("function"|"class")
 - {module} (string) module name including this declaration

@@ -30,7 +30,7 @@ end
 
 local M = {}
 
---- @class Test
+--- @class genvdoc_test_class
 --- @field field1 string field1 description
 --- @field field2 number field2 description
 
@@ -151,7 +151,7 @@ other()                                                *genvdoc.other.other()*
 ==============================================================================
 STRUCTURE                                                  *genvdoc-STRUCTURE*
 
-Test                                                            *genvdoc.Test*
+genvdoc_test_class                                        *genvdoc_test_class*
 
 - {field1} (string) field1 description
 - {field2} (number) field2 description
