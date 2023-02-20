@@ -171,7 +171,7 @@ end
 
 local parse_field_line = function(line)
   local factors = vim.split(line, "%s+")
-  local typ = factors[2]
+  local typ = (factors[2] or "TODO"):gsub(":$", "")
   local description = table.concat(vim.list_slice(factors, 3), " ")
   if description == "" then
     description = nil
