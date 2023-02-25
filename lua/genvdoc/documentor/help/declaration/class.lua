@@ -19,7 +19,12 @@ end
 function M.build_lines(self, description_lines)
   local lines = add_indent(vim.deepcopy(description_lines), 2)
   table.insert(lines, "")
-  for _, field in ipairs(self._declaration.fields) do
+
+  local public_fields = vim.tbl_filter(function(field)
+    return field.scope == "public"
+  end, self._declaration.fields)
+
+  for _, field in ipairs(public_fields) do
     local line = ("- {%s} (%s)"):format(field.name, field.type)
     if field.descriptions[1] then
       line = line .. " " .. field.descriptions[1]

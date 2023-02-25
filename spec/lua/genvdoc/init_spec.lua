@@ -34,6 +34,7 @@ local M = {}
 --- @class genvdoc_test_class
 --- @field field1 string field1 description
 --- @field field2 number field2 description
+--- @field private ignored_field
 
 --- Ignored comment
 --- Ignored comment

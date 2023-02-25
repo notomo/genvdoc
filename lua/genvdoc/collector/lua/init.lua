@@ -169,15 +169,36 @@ local parse_return_line = function(line)
   }
 end
 
+local field_scopes = {
+  "private",
+  "protected",
+  "public",
+  "package",
+}
+
 local parse_field_line = function(line)
   local factors = vim.split(line, "%s+")
-  local typ = (factors[2] or "TODO"):gsub(":$", "")
-  local description = table.concat(vim.list_slice(factors, 3), " ")
+
+  local scope, name, type_index
+  if not vim.tbl_contains(field_scopes, factors[1]) then
+    scope = "public"
+    name = factors[1]
+    type_index = 2
+  else
+    scope = factors[1]
+    name = factors[2]
+    type_index = 3
+  end
+
+  local typ = (factors[type_index] or "TODO"):gsub(":$", "")
+  local description = table.concat(vim.list_slice(factors, type_index + 1), " ")
   if description == "" then
     description = nil
   end
+
   return {
-    name = factors[1],
+    name = name,
+    scope = scope,
     type = typ,
     descriptions = { description },
   }
