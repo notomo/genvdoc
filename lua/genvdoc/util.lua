@@ -99,4 +99,59 @@ function M.hl_group_sections(ctx, names, descriptions)
   return table.concat(sections, "\n\n")
 end
 
+function M.read_all(path)
+  local str, err = require("genvdoc.lib.file").read_all(path)
+  if err then
+    error(err)
+  end
+  return str
+end
+
+function M.extract_variable_as_text(path, variable_name, opts)
+  opts = opts or {}
+  local target_node_name = opts.target_node or "variable_declaration"
+
+  local f = io.open(path, "r")
+  local str = f:read("*a")
+  f:close()
+
+  local query = vim.treesitter.query.parse_query(
+    "lua",
+    ([[
+(variable_declaration
+  (assignment_statement
+    (variable_list
+        name: (_) @name (#match? @name "^%s$")
+    ) @variable_list
+    (expression_list) @expression_list
+  ) @assignment_statement
+) @variable_declaration
+]]):format(variable_name)
+  )
+
+  local parser = vim.treesitter.get_string_parser(str, "lua")
+  local trees = parser:parse()
+  local root = trees[1]:root()
+  local _, match = query:iter_matches(root, str, 0, -1)()
+
+  local target_node
+  for id, node in pairs(match) do
+    local captured = query.captures[id]
+    if captured == target_node_name then
+      target_node = node
+      break
+    end
+  end
+
+  return vim.treesitter.query.get_node_text(target_node, str)
+end
+
+function M.execute(str)
+  local f, err = loadstring(str)
+  if err then
+    error(err)
+  end
+  return f()
+end
+
 return M

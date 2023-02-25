@@ -30,4 +30,32 @@ describe("genvdoc.util", function()
 <]]
     assert.equal(want, got)
   end)
+
+  it("can extract variable as text", function()
+    local file_path = helper.test_data:create_file(
+      "lua/genvdoc/other.lua",
+      [[
+local other = {}
+
+local default_option = {
+  test1 = "a",
+  test2 = "b",
+}
+]]
+    )
+
+    local got = util.extract_variable_as_text(file_path, "default_option")
+    local want = [[
+local default_option = {
+  test1 = "a",
+  test2 = "b",
+}]]
+    assert.equal(want, got)
+  end)
+
+  it("can execute chunk", function()
+    local got = util.execute("return 'str'")
+    local want = "str"
+    assert.equal(want, got)
+  end)
 end)
