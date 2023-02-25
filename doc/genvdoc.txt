@@ -8,7 +8,7 @@ generate({plugin_name}, {opts})                           *genvdoc.generate()*
 
   Parameters: ~
     {plugin_name} (string) used for document name
-    {opts} (genvdoc_generate_option?) |genvdoc_generate_option|
+    {opts} (GenvdocGenerateOption?) |GenvdocGenerateOption|
 
 ==============================================================================
 Lua module: genvdoc.util                                *genvdoc-genvdoc.util*
@@ -31,27 +31,32 @@ help_code_block({str}, {opts})                *genvdoc.util.help_code_block()*
 ==============================================================================
 STRUCTURE                                                  *genvdoc-STRUCTURE*
 
-genvdoc_generate_option                              *genvdoc_generate_option*
+GenvdocGenerateOption                                  *GenvdocGenerateOption*
 
 - {output_dir} (string?) output directory path (default: "./doc/")
-- {source} (genvdoc_source_option?) |genvdoc_source_option|
-- {chapters} ((genvdoc_chapter_option[])?) |genvdoc_chapter_option|
+- {source} (GenvdocSourceOption?) |GenvdocSourceOption|
+- {chapters} ((GenvdocChapterOption[])?) |GenvdocChapterOption|
 
-genvdoc_source_option                                  *genvdoc_source_option*
+GenvdocSourceOption                                      *GenvdocSourceOption*
 
 - {patterns} (string[]) glob patterns to collect document source (default: { "lua/**/*.lua" })
 
-genvdoc_chapter_option                                *genvdoc_chapter_option*
+GenvdocChapterOption                                    *GenvdocChapterOption*
 
 - {name} (string|fun(group:string):string) chapter name
-- {group} ((fun(node:genvdoc_node):string?)?) chapter grouping
-- {body} ((fun():string)?) returns chapter body string
+- {group} ((fun(node:GenvdocNode):string?)?) chapter grouping
+- {body} ((fun(ctx:GenvdocChapterBodyContext):string)?) returns chapter body string
 
-genvdoc_node                                                    *genvdoc_node*
+GenvdocChapterBodyContext                          *GenvdocChapterBodyContext*
 
-- {declaration} (genvdoc_declaration?)
+- {plugin_name} (string)
+- {width} (integer)
 
-genvdoc_declaration                                      *genvdoc_declaration*
+GenvdocNode                                                      *GenvdocNode*
+
+- {declaration} (GenvdocDeclaration?) |GenvdocDeclaration|
+
+GenvdocDeclaration                                        *GenvdocDeclaration*
 
 - {type} ("function"|"class")
 - {module} (string) module name including this declaration

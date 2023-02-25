@@ -2,29 +2,33 @@ local pathlib = require("genvdoc.vendor.misclib.path")
 
 local M = {}
 
---- @class genvdoc_generate_option
+--- @class GenvdocGenerateOption
 --- @field output_dir string? output directory path (default: "./doc/")
---- @field source genvdoc_source_option? |genvdoc_source_option|
---- @field chapters (genvdoc_chapter_option[])? |genvdoc_chapter_option|
+--- @field source GenvdocSourceOption? |GenvdocSourceOption|
+--- @field chapters (GenvdocChapterOption[])? |GenvdocChapterOption|
 
---- @class genvdoc_source_option
+--- @class GenvdocSourceOption
 --- @field patterns string[] glob patterns to collect document source (default: { "lua/**/*.lua" })
 
---- @class genvdoc_chapter_option
+--- @class GenvdocChapterOption
 --- @field name string|fun(group:string):string chapter name
---- @field group (fun(node:genvdoc_node):string?)? chapter grouping
---- @field body (fun():string)? returns chapter body string
+--- @field group (fun(node:GenvdocNode):string?)? chapter grouping
+--- @field body (fun(ctx:GenvdocChapterBodyContext):string)? returns chapter body string
 
---- @class genvdoc_node
---- @field declaration genvdoc_declaration?
+--- @class GenvdocChapterBodyContext
+--- @field plugin_name string
+--- @field width integer
 
---- @class genvdoc_declaration
+--- @class GenvdocNode
+--- @field declaration GenvdocDeclaration? |GenvdocDeclaration|
+
+--- @class GenvdocDeclaration
 --- @field type "function"|"class"
 --- @field module string module name including this declaration
 
 ---Generate a document.
 ---@param plugin_name string: used for document name
----@param opts genvdoc_generate_option? |genvdoc_generate_option|
+---@param opts GenvdocGenerateOption? |GenvdocGenerateOption|
 function M.generate(plugin_name, opts)
   opts = require("genvdoc.option").new(opts)
 
