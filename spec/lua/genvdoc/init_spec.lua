@@ -42,7 +42,7 @@ local M = {}
 --- Inspect a tbl.
 --- @param tbl table: a target table
 ---   param1 description
---- @vararg any: variadic
+--- @param ... any: variadic
 ---   variadic description
 --- @return string: inspected
 ---   return description
