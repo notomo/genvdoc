@@ -242,15 +242,6 @@ function M._search_declaration(ctx, result)
       end)
     end
 
-    local vararg_line = parse_annotation("vararg", comment)
-    if vararg_line then
-      local param = parse_variadic_param_line(vararg_line)
-      table.insert(result.declaration.params, param)
-      return M._collect_declaration_description(ctx, result, function(description)
-        table.insert(param.descriptions, description)
-      end)
-    end
-
     local return_line = parse_annotation("return", comment)
     if return_line then
       local return_ = parse_return_line(return_line)
