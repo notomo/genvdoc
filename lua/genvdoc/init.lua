@@ -23,8 +23,13 @@ local M = {}
 --- @field declaration GenvdocDeclaration? |GenvdocDeclaration|
 
 --- @class GenvdocDeclaration
---- @field type "function"|"class"
+--- @field type GenvdocDeclarationType
 --- @field module string module name including this declaration
+
+--- @alias GenvdocDeclarationType
+--- | '"function"' # has module function's params and returns
+--- | '"class"' # has class name and fields
+--- | '"alias"' # has enum like union values
 
 ---Generate a document.
 ---@param plugin_name string: used for document name

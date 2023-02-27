@@ -17,7 +17,7 @@ require("genvdoc").generate("example.nvim", {
     {
       name = "STRUCTURE",
       group = function(node)
-        if node.declaration == nil or node.declaration.type ~= "class" then
+        if node.declaration == nil or not vim.tbl_contains({ "class", "alias" }, node.declaration.type) then
           return nil
         end
         return "STRUCTURE"

@@ -27,6 +27,14 @@ function Declaration.build_lines(declaration, description_lines, width)
     }
   end
 
+  if declaration.type == "alias" then
+    local alias = require("genvdoc.documentor.help.declaration.alias").new(declaration)
+    return {
+      alias:tagged_line(width),
+      unpack(alias:build_lines(description_lines)),
+    }
+  end
+
   return {}
 end
 

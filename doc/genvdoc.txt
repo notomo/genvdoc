@@ -58,8 +58,15 @@ GenvdocNode                                                      *GenvdocNode*
 
 GenvdocDeclaration                                        *GenvdocDeclaration*
 
-- {type} ("function"|"class")
+- {type} (GenvdocDeclarationType)
 - {module} (string) module name including this declaration
+
+GenvdocDeclarationType                                *GenvdocDeclarationType*
+  = "function" | "class" | "alias"
+
+- "function": has module function's params and returns
+- "class": has class name and fields
+- "alias": has enum like union values
 
 ==============================================================================
 EXAMPLES                                                    *genvdoc-EXAMPLES*
@@ -84,7 +91,7 @@ EXAMPLES                                                    *genvdoc-EXAMPLES*
       {
         name = "STRUCTURE",
         group = function(node)
-          if node.declaration == nil or node.declaration.type ~= "class" then
+          if node.declaration == nil or not vim.tbl_contains({ "class", "alias" }, node.declaration.type) then
             return nil
           end
           return "STRUCTURE"

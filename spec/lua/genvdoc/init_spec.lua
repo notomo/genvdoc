@@ -50,6 +50,12 @@ function M.inspect(tbl, ...)
   return vim.inspect(tbl)
 end
 
+--- GenvdocAlias description
+--- @alias GenvdocAlias
+--- | '"value1"' # value1 description
+--- | '"value2"' # value2 description
+--- | '"value3"' # value3 description
+
 --- Inspect2.
 --- @param arg1 table: the first argument
 ---   param1 description
@@ -97,7 +103,7 @@ return M
     table.insert(chapters, {
       name = "STRUCTURE",
       group = function(node)
-        if node.declaration == nil or node.declaration.type ~= "class" then
+        if node.declaration == nil or not vim.tbl_contains({ "class", "alias" }, node.declaration.type) then
           return nil
         end
         return "STRUCTURE"
@@ -158,6 +164,14 @@ genvdoc_test_class                                        *genvdoc_test_class*
 
 - {field1} (string) field1 description
 - {field2} (number) field2 description
+
+GenvdocAlias                                                    *GenvdocAlias*
+  GenvdocAlias description
+  = "value1" | "value2" | "value3"
+
+- "value1": value1 description
+- "value2": value2 description
+- "value3": value3 description
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help

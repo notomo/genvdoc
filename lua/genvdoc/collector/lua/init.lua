@@ -80,6 +80,9 @@ function M._parse(query, modules, path)
 
         -- type: class
         fields = {},
+
+        -- type: alias
+        alias_values = {},
       },
     }
     local ok = M._parse_comment(ctx, result)
@@ -150,13 +153,6 @@ local parse_param_line = function(line)
   local typ = (factors[2] or "TODO"):gsub(":$", "")
   local description = table.concat(vim.list_slice(factors, 3), " ")
   return new_parameter(factors[1], typ, description)
-end
-
-local parse_variadic_param_line = function(line)
-  local factors = vim.split(line, "%s+")
-  local typ = (factors[1] or "TODO"):gsub(":$", "")
-  local description = table.concat(vim.list_slice(factors, 2), " ")
-  return new_parameter("...", typ, description)
 end
 
 local parse_return_line = function(line)
@@ -248,6 +244,15 @@ function M._search_declaration(ctx, result)
       table.insert(result.declaration.returns, return_)
       return M._collect_declaration_description(ctx, result, function(description)
         table.insert(return_.descriptions, description)
+      end)
+    end
+
+    local alias_name = parse_annotation("alias", comment)
+    if alias_name then
+      result.declaration.name = alias_name
+      result.declaration.type = "alias"
+      return M._collect_alias_values(ctx, result, function(alias_value)
+        table.insert(result.declaration.alias_values, alias_value)
       end)
     end
 
@@ -343,6 +348,47 @@ function M._parse_declaration(ctx, result)
   ctx.iterator_back()
 
   return true
+end
+
+local parse_alias_value = function(line)
+  local name, description = line:match([[^| '([^']+)' # (.*)]])
+  if not name then
+    return nil
+  end
+  return {
+    name = name,
+    description = description,
+  }
+end
+
+function M._collect_alias_values(ctx, result, add_alias_value)
+  local id, node = ctx.iterator_next()
+  if not id then
+    table.insert(ctx.results, result)
+    return false
+  end
+  if not ctx.is_continuous_line(node) then
+    table.insert(ctx.results, result)
+    ctx.iterator_back()
+    return true
+  end
+
+  local capture_name = ctx.get_capture_name(id)
+  local text = ctx.get_node_text(node)
+
+  if capture_name == "comment" then
+    local comment = parse_comment(text)
+    local alias_value = parse_alias_value(comment)
+    if alias_value then
+      add_alias_value(alias_value)
+      return M._collect_alias_values(ctx, result, add_alias_value)
+    end
+  end
+
+  table.insert(ctx.results, result)
+  ctx.iterator_back()
+
+  return false
 end
 
 return M
