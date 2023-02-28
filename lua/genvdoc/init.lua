@@ -28,6 +28,7 @@ local M = {}
 
 --- @alias GenvdocDeclarationType
 --- | '"function"' # has module function's params and returns
+--- | '"anonymous_function"' # same with "function" but does not have name
 --- | '"class"' # has class name and fields
 --- | '"alias"' # has enum like union values
 

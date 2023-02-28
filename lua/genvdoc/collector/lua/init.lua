@@ -12,6 +12,9 @@ function M.collect(pattern)
   name: (_ field: (identifier) @function)
   parameters: (_ name: (identifier) @param)
 )
+(function_definition
+  parameters: (_ name: (identifier) @param)
+) @anonymous_function
 ]]
   )
 
@@ -216,6 +219,11 @@ function M._search_declaration(ctx, result)
   if capture_name == "function" then
     result.declaration.name = text
     result.declaration.type = "function"
+    return M._parse_declaration(ctx, result)
+  end
+
+  if capture_name == "anonymous_function" then
+    result.declaration.type = "anonymous_function"
     return M._parse_declaration(ctx, result)
   end
 

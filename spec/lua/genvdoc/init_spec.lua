@@ -98,17 +98,48 @@ end
 return M
 ]]
     )
+    helper.test_data:create_file(
+      "lua/genvdoc/func.lua",
+      [[
+--- Function module description.
+--- @param tbl table: a target table
+return function(tbl)
+  return
+end
+]]
+    )
 
-    local chapters = vim.deepcopy(default_chapters)
-    table.insert(chapters, {
-      name = "STRUCTURE",
-      group = function(node)
-        if node.declaration == nil or not vim.tbl_contains({ "class", "alias" }, node.declaration.type) then
-          return nil
-        end
-        return "STRUCTURE"
-      end,
-    })
+    local chapters = {
+      {
+        name = function(group)
+          return "Lua module: " .. group
+        end,
+        group = function(node)
+          if node.declaration == nil or node.declaration.type ~= "function" then
+            return nil
+          end
+          return node.declaration.module
+        end,
+      },
+      {
+        name = "STRUCTURE",
+        group = function(node)
+          if node.declaration == nil or not vim.tbl_contains({ "class", "alias" }, node.declaration.type) then
+            return nil
+          end
+          return "STRUCTURE"
+        end,
+      },
+      {
+        name = "Function modules",
+        group = function(node)
+          if node.declaration == nil or node.declaration.type ~= "anonymous_function" then
+            return nil
+          end
+          return "Function modules"
+        end,
+      },
+    }
     local err = genvdoc.generate("genvdoc", {
       output_dir = helper.test_data.full_path,
       chapters = chapters,
@@ -172,6 +203,15 @@ GenvdocAlias                                                    *GenvdocAlias*
 - "value1": value1 description
 - "value2": value2 description
 - "value3": value3 description
+
+==============================================================================
+Function modules                                    *genvdoc-Function-modules*
+
+func({tbl})                                                   *genvdoc.func()*
+  Function module description.
+
+  Parameters: ~
+    {tbl} (table) a target table
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help

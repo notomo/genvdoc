@@ -3,7 +3,7 @@ local add_indent = require("genvdoc.documentor.indent").add_indent
 local Declaration = {}
 
 function Declaration.build_lines(declaration, description_lines, width)
-  if declaration.type == "function" then
+  if declaration.type == "function" or declaration.type == "anonymous_function" then
     local parameters = require("genvdoc.documentor.help.declaration.function_parameter").new(declaration)
 
     local declaration_lines = {}

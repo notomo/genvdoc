@@ -23,13 +23,20 @@ function M.new(declaration)
 end
 
 function M.tagged_line(self, width)
-  local name
-  if self._has_self then
-    name = ("%s:%s()"):format(self._declaration.module, self._declaration.name)
+  local name, str
+  if self._declaration.name then
+    if self._has_self then
+      name = ("%s:%s()"):format(self._declaration.module, self._declaration.name)
+    else
+      name = ("%s.%s()"):format(self._declaration.module, self._declaration.name)
+    end
+    str = ("%s(%s)"):format(self._declaration.name, table.concat(self._params, ", "))
   else
-    name = ("%s.%s()"):format(self._declaration.module, self._declaration.name)
+    name = ("%s()"):format(self._declaration.module)
+    local splitted = vim.split(self._declaration.module, ".", { plain = true })
+    local tail = splitted[#splitted]
+    str = ("%s(%s)"):format(tail, table.concat(self._params, ", "))
   end
-  local str = ("%s(%s)"):format(self._declaration.name, table.concat(self._params, ", "))
   return Tag.add(str, width, name)
 end
 
