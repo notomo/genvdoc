@@ -63,6 +63,9 @@ function M.inspect2(self, arg1)
   return vim.inspect()
 end
 
+--- Inspector.
+M.inspector = {}
+
 --- Ignored comment
 --- Ignored comment
 
@@ -115,7 +118,7 @@ end
           return "Lua module: " .. group
         end,
         group = function(node)
-          if node.declaration == nil or node.declaration.type ~= "function" then
+          if node.declaration == nil or not vim.tbl_contains({ "function", "property" }, node.declaration.type) then
             return nil
           end
           return node.declaration.module
@@ -174,6 +177,9 @@ inspect2({arg1})                                          *genvdoc:inspect2()*
   Parameters: ~
     {arg1} (table) the first argument
         param1 description
+
+inspector                                                  *genvdoc.inspector*
+  Inspector.
 
 inspect4({tbl})                                           *genvdoc.inspect4()*
   Inspect4.

@@ -15,6 +15,13 @@ function M.collect(pattern)
 (function_definition
   parameters: (_ name: (identifier) @param)
 ) @anonymous_function
+(assignment_statement
+  (variable_list
+    name: (dot_index_expression
+      field: (identifier) @property
+    )
+  )
+)
 ]]
   )
 
@@ -225,6 +232,13 @@ function M._search_declaration(ctx, result)
   if capture_name == "anonymous_function" then
     result.declaration.type = "anonymous_function"
     return M._parse_declaration(ctx, result)
+  end
+
+  if capture_name == "property" then
+    result.declaration.name = text
+    result.declaration.type = "property"
+    table.insert(ctx.results, result)
+    return true
   end
 
   if capture_name == "comment" then
