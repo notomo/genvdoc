@@ -44,7 +44,7 @@ local M = {}
 ---   param1 description
 --- @param ... any: variadic
 ---   variadic description
---- @return string: inspected
+--- @return string # inspected
 ---   return description
 function M.inspect(tbl, ...)
   return vim.inspect(tbl)

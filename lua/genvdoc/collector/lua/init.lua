@@ -168,7 +168,13 @@ end
 local parse_return_line = function(line)
   local factors = vim.split(line, "%s+")
   local typ = (factors[1] or "TODO"):gsub(":$", "")
-  local description = table.concat(vim.list_slice(factors, 2), " ")
+
+  local description_index = 2
+  if factors[2] == "#" then
+    description_index = description_index + 1
+  end
+  local description = table.concat(vim.list_slice(factors, description_index), " ")
+
   return {
     type = typ,
     descriptions = { description },
