@@ -4,7 +4,7 @@ local Modules = require("genvdoc.collector.lua.module")
 local M = {}
 
 function M.collect(pattern)
-  local query = vim.treesitter.query.parse_query(
+  local query = vim.treesitter.query.parse(
     "lua",
     [[
 ((comment) @comment (match? @comment "^---"))
@@ -69,7 +69,7 @@ function M._parse(query, modules, path)
       return first_row <= last_row + 1
     end,
     get_node_text = function(node)
-      return vim.treesitter.query.get_node_text(node, str)
+      return vim.treesitter.get_node_text(node, str)
     end,
     get_capture_name = function(id)
       return query.captures[id]

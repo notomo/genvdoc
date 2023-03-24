@@ -115,7 +115,7 @@ function M.extract_variable_as_text(path, variable_name, opts)
   local str = f:read("*a")
   f:close()
 
-  local query = vim.treesitter.query.parse_query(
+  local query = vim.treesitter.query.parse(
     "lua",
     ([[
 (variable_declaration
@@ -143,7 +143,7 @@ function M.extract_variable_as_text(path, variable_name, opts)
     end
   end
 
-  return vim.treesitter.query.get_node_text(target_node, str)
+  return vim.treesitter.get_node_text(target_node, str)
 end
 
 function M.execute(str)
