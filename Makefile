@@ -1,3 +1,5 @@
+FULL_PLUGIN_NAME:=genvdoc
+
 include spec/.shared/neovim-plugin.mk
 
 spec/.shared/neovim-plugin.mk:
