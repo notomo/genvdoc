@@ -154,4 +154,37 @@ function M.execute(str)
   return f()
 end
 
+function M.extract_documented_table(path)
+  local f = io.open(path, "r")
+  local str = f:read("*a")
+  f:close()
+
+  local query = vim.treesitter.query.parse(
+    "lua",
+    [[
+  (
+    (comment "comment_content" @document)
+    .
+    (field
+      name: (_) @key
+      value: (_) @value
+    )
+  )
+]]
+  )
+
+  local parser = vim.treesitter.get_string_parser(str, "lua")
+  local trees = parser:parse()
+  local root = trees[1]:root()
+
+  local list = {}
+  for _, match in query:iter_matches(root, str, 0, -1) do
+    local extracted = require("genvdoc.vendor.misclib.treesitter").get_captures(match, query, function(tbl, key, node)
+      tbl[key] = vim.treesitter.get_node_text(node, str)
+    end)
+    table.insert(list, extracted)
+  end
+  return list
+end
+
 return M
