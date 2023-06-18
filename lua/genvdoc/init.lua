@@ -1,5 +1,3 @@
-local pathlib = require("genvdoc.vendor.misclib.path")
-
 local M = {}
 
 --- @class GenvdocGenerateOption
@@ -41,7 +39,7 @@ function M.generate(plugin_name, opts)
   local nodes = require("genvdoc.collector").collect(opts.source)
   local document = require("genvdoc.documentor").generate(plugin_name, nodes, opts.chapters)
 
-  local path = pathlib.join(opts.output_dir, document.name)
+  local path = vim.fs.joinpath(opts.output_dir, document.name)
   require("genvdoc.lib.file").write(path, document:build())
 end
 

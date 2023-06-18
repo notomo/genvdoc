@@ -1,4 +1,3 @@
-local pathlib = require("genvdoc.vendor.misclib.path")
 local Modules = require("genvdoc.collector.lua.module")
 
 local M = {}
@@ -27,7 +26,7 @@ function M.collect(pattern)
 
   local modules = Modules.new(".")
   local current_path = vim.fn.fnamemodify(".", ":p")
-  local full_pattern = pathlib.join(current_path, pattern)
+  local full_pattern = vim.fs.joinpath(current_path, pattern)
   local paths = vim.fn.glob(full_pattern, true, true)
 
   local all_nodes = {}
