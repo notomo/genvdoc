@@ -149,7 +149,7 @@ end
     })
     assert.is_nil(err)
 
-    local file_path = helper.test_data.full_path .. "genvdoc.txt"
+    local file_path = helper.test_data:path("genvdoc.txt")
     assert.content(
       file_path,
       [[
@@ -256,7 +256,7 @@ return M
     })
     assert.is_nil(err)
 
-    local file_path = helper.test_data.full_path .. "genvdoc.txt"
+    local file_path = helper.test_data:path("genvdoc.txt")
 
     assert.content(
       file_path,
@@ -297,7 +297,7 @@ nnoremap <Leader>f <Cmd>Genvdoc foo<CR>]]
 
     assert.is_nil(err)
 
-    local file_path = helper.test_data.full_path .. "genvdoc.txt"
+    local file_path = helper.test_data:path("genvdoc.txt")
     assert.content(
       file_path,
       [[
@@ -324,7 +324,7 @@ vim:tw=78:ts=8:ft=help
     })
     assert.is_nil(err)
 
-    local file_path = helper.test_data.full_path .. "genvdoc.txt"
+    local file_path = helper.test_data:path("genvdoc.txt")
     assert.content(
       file_path,
       [[
