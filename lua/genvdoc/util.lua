@@ -163,7 +163,7 @@ function M.extract_documented_table(path)
     "lua",
     [[
   (
-    (comment "comment_content" @document)
+    (comment content: (comment_content) @document)
     .
     (field
       name: (_) @key
