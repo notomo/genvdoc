@@ -6,7 +6,7 @@ function M.collect(pattern)
   local query = vim.treesitter.query.parse(
     "lua",
     [[
-((comment) @comment (match? @comment "^---"))
+((comment) @comment (#match? @comment "^---"))
 (function_declaration
   name: (_ field: (identifier) @function)
   parameters: (_ name: (identifier) @param)
