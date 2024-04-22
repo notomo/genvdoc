@@ -20,9 +20,12 @@ function M.build_lines(self, description_lines)
   local lines = add_indent(vim.deepcopy(description_lines), 2)
   table.insert(lines, "")
 
-  local public_fields = vim.tbl_filter(function(field)
-    return field.scope == "public"
-  end, self._declaration.fields)
+  local public_fields = vim
+    .iter(self._declaration.fields)
+    :filter(function(field)
+      return field.scope == "public"
+    end)
+    :totable()
 
   for _, field in ipairs(public_fields) do
     local line = ("- {%s} (%s)"):format(field.name, field.type)

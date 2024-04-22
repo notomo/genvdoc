@@ -5,9 +5,12 @@ local M = {}
 M.__index = M
 
 function M.new(declaration)
-  local params_except_self = vim.tbl_filter(function(param)
-    return param.name ~= "self"
-  end, declaration.params)
+  local params_except_self = vim
+    .iter(declaration.params)
+    :filter(function(param)
+      return param.name ~= "self"
+    end)
+    :totable()
 
   local params = vim.tbl_map(function(param)
     return ("{%s}"):format(param.name)
