@@ -17,9 +17,12 @@ function M.tagged_line(self, width)
 end
 
 function M.build_lines(self, description_lines)
-  local names = vim.tbl_map(function(alias_value)
-    return alias_value.name
-  end, self._declaration.alias_values)
+  local names = vim
+    .iter(self._declaration.alias_values)
+    :map(function(alias_value)
+      return alias_value.name
+    end)
+    :totable()
   local union = "= " .. table.concat(names, " | ")
 
   local lines = {}

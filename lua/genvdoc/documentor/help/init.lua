@@ -32,9 +32,12 @@ function Document._header(self)
 end
 
 function Document._body(self)
-  local chapters = vim.tbl_map(function(chapter)
-    return ("%s\n%s"):format(self._separator, chapter:build(self._plugin_name, self._width))
-  end, self._chapters)
+  local chapters = vim
+    .iter(self._chapters)
+    :map(function(chapter)
+      return ("%s\n%s"):format(self._separator, chapter:build(self._plugin_name, self._width))
+    end)
+    :totable()
   return table.concat(chapters, "\n")
 end
 

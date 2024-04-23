@@ -12,9 +12,12 @@ function M.new(declaration)
     end)
     :totable()
 
-  local params = vim.tbl_map(function(param)
-    return ("{%s}"):format(param.name)
-  end, params_except_self)
+  local params = vim
+    .iter(params_except_self)
+    :map(function(param)
+      return ("{%s}"):format(param.name)
+    end)
+    :totable()
 
   local tbl = {
     _declaration = declaration,

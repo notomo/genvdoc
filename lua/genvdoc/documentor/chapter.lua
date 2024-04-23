@@ -40,10 +40,13 @@ function M.grouping(new_chapter, raw_setting, nodes)
     return a < b
   end)
 
-  return vim.tbl_map(function(group_name)
-    local name = chapter_setting.name(group_name)
-    return new_chapter(name, group_name, groups[group_name], chapter_setting.body)
-  end, group_names)
+  return vim
+    .iter(group_names)
+    :map(function(group_name)
+      local name = chapter_setting.name(group_name)
+      return new_chapter(name, group_name, groups[group_name], chapter_setting.body)
+    end)
+    :totable()
 end
 
 return M
