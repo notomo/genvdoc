@@ -9,7 +9,12 @@ function M.help_code_block_from_file(file_path, opts)
   opts.include = opts.include or function(_)
     return true
   end
+
   local f = io.open(file_path, "r")
+  if not f then
+    error("failed to open: " .. file_path)
+  end
+
   local lines = {}
   for line in f:lines() do
     if opts.include(line) then
@@ -100,20 +105,23 @@ function M.hl_group_sections(ctx, names, descriptions)
 end
 
 function M.read_all(path)
-  local str, err = require("genvdoc.lib.file").read_all(path)
-  if err then
-    error(err)
+  local str = require("genvdoc.lib.file").read_all(path)
+  if type(str) == "table" then
+    local err = str
+    error(err.message)
   end
   return str
+end
+
+function M.write(path, str)
+  require("genvdoc.lib.file").write(path, str)
 end
 
 function M.extract_variable_as_text(path, variable_name, opts)
   opts = opts or {}
   local target_node_name = opts.target_node or "variable_declaration"
 
-  local f = io.open(path, "r")
-  local str = f:read("*a")
-  f:close()
+  local str = M.read_all(path)
 
   local query = vim.treesitter.query.parse(
     "lua",
@@ -151,13 +159,12 @@ function M.execute(str)
   if err then
     error(err)
   end
+  ---@diagnostic disable-next-line: need-check-nil
   return f()
 end
 
 function M.extract_documented_table(path)
-  local f = io.open(path, "r")
-  local str = f:read("*a")
-  f:close()
+  local str = M.read_all(path)
 
   local query = vim.treesitter.query.parse(
     "lua",

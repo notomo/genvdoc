@@ -38,9 +38,10 @@ function M.collect(pattern)
 end
 
 function M._parse(query, modules, path)
-  local str, err = require("genvdoc.lib.file").read_all(path)
-  if err then
-    error(err)
+  local str = require("genvdoc.lib.file").read_all(path)
+  if type(str) == "table" then
+    local err = str
+    error(err.message)
   end
 
   local parser = vim.treesitter.get_string_parser(str, "lua")
