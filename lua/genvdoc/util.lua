@@ -143,11 +143,13 @@ function M.extract_variable_as_text(path, variable_name, opts)
   local _, match = query:iter_matches(root, str, 0, -1)()
 
   local target_node
-  for id, node in pairs(match) do
-    local captured = query.captures[id]
-    if captured == target_node_name then
-      target_node = node
-      break
+  for id, nodes in pairs(match) do
+    for _, node in pairs(nodes) do
+      local captured = query.captures[id]
+      if captured == target_node_name then
+        target_node = node
+        break
+      end
     end
   end
 
