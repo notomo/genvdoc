@@ -85,6 +85,12 @@ end
 --- Ignored comment
 --- Ignored comment
 
+local OtherTable = {}
+
+--- OtherTable method1
+function OtherTable.method1()
+end
+
 return M
 ]]
     )
@@ -186,6 +192,9 @@ inspect4({tbl})                                           *genvdoc.inspect4()*
 
   Parameters: ~
     {tbl} (table) a target table
+
+OtherTable.method1()                            *genvdoc.OtherTable.method1()*
+  OtherTable method1
 
 ==============================================================================
 Lua module: genvdoc.other                              *genvdoc-genvdoc.other*

@@ -8,7 +8,10 @@ function M.collect(pattern)
     [[
 ((comment) @comment (#match? @comment "^---"))
 (function_declaration
-  name: (_ field: (identifier) @function)
+  name: (_
+    table: (identifier) @method_table
+    field: (identifier) @function
+  )
   parameters: (_ name: (identifier) @param)
 )
 (function_definition
@@ -87,6 +90,7 @@ function M._parse(query, modules, path)
         -- type: function
         params = {},
         returns = {},
+        method_tables = {},
 
         -- type: class
         fields = {},
@@ -238,6 +242,11 @@ function M._search_declaration(ctx, result)
   if capture_name == "anonymous_function" then
     result.declaration.type = "anonymous_function"
     return M._parse_declaration(ctx, result)
+  end
+
+  if capture_name == "method_table" then
+    table.insert(result.declaration.method_tables, text)
+    return M._search_declaration(ctx, result)
   end
 
   if capture_name == "property" then
