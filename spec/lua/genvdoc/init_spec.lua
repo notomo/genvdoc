@@ -1,5 +1,7 @@
 local helper = require("genvdoc.test.helper")
 local genvdoc = helper.require("genvdoc")
+local assert = require("assertlib").typed(assert)
+---@cast assert +{content:fun(path,want)}
 
 local default_chapters = {
   {
