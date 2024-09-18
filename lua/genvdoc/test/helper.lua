@@ -30,6 +30,7 @@ asserts.create("content"):register(function(self)
 
     local actual = args[2]
 
+    ---@diagnostic disable-next-line: missing-fields
     local diff = vim.diff(actual, expected, {})
 
     self:set_positive(("diff exists: actual(+), expected(-)\n%s"):format(diff))
@@ -38,5 +39,11 @@ asserts.create("content"):register(function(self)
     return diff == ""
   end
 end)
+
+function helper.typed_assert(assert)
+  local x = require("assertlib").typed(assert)
+  ---@cast x +{content:fun(path,want)}
+  return x
+end
 
 return helper

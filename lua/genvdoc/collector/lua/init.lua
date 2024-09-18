@@ -207,7 +207,7 @@ local parse_field_line = function(line)
   end
 
   local typ = (factors[type_index] or "TODO"):gsub(":$", "")
-  local description = table.concat(vim.list_slice(factors, type_index + 1), " ")
+  local description = table.concat(vim.list_slice(factors, type_index + 1), " ") ---@type string|nil
   if description == "" then
     description = nil
   end

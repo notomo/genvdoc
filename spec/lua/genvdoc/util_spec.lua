@@ -1,6 +1,6 @@
 local helper = require("genvdoc.test.helper")
 local util = helper.require("genvdoc.util")
-local assert = require("assertlib").typed(assert)
+local assert = helper.typed_assert(assert)
 
 describe("genvdoc.util", function()
   before_each(helper.before_each)
