@@ -28,6 +28,12 @@ help_code_block({str}, {opts})                *genvdoc.util.help_code_block()*
     {str} (string) used for code block
     {opts} (table|nil) default {language = ""}
 
+indent({str}, {count})                                 *genvdoc.util.indent()*
+
+  Parameters: ~
+    {str} (string) 
+    {count} (integer) 
+
 ==============================================================================
 STRUCTURE                                                  *genvdoc-STRUCTURE*
 

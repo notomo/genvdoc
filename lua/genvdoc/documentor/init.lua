@@ -1,11 +1,9 @@
 local M = {}
 
+--- @param plugin_name string
+--- @param nodes table
+--- @param raw_chapter_settings table
 function M.generate(plugin_name, nodes, raw_chapter_settings)
-  vim.validate({
-    plugin_name = { plugin_name, "string" },
-    nodes = { nodes, "table" },
-    raw_chapter_settings = { raw_chapter_settings, "table" },
-  })
   local new_chapter = require("genvdoc.documentor.help.chapter").new
 
   local all_chapters = {}

@@ -2,11 +2,8 @@ local tablelib = require("genvdoc.vendor.misclib.collection.table")
 
 local M = {}
 
+--- @param raw_setting table
 local new_setting = function(raw_setting)
-  vim.validate({
-    raw_setting = { raw_setting, "table" },
-  })
-
   local name = function(_)
     return raw_setting.name
   end
@@ -25,10 +22,8 @@ local new_setting = function(raw_setting)
   }
 end
 
+--- @param nodes table
 function M.grouping(new_chapter, raw_setting, nodes)
-  vim.validate({
-    nodes = { nodes, "table" },
-  })
   local chapter_setting = new_setting(raw_setting)
   local groups = tablelib.group_by(nodes, chapter_setting.group)
 

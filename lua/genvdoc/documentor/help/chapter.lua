@@ -5,13 +5,11 @@ local add_indent = require("genvdoc.documentor.indent").add_indent
 local Chapter = {}
 Chapter.__index = Chapter
 
+--- @param name string
+--- @param group_name string
+--- @param nodes table?
+--- @param body function?
 function Chapter.new(name, group_name, nodes, body)
-  vim.validate({
-    name = { name, "string" },
-    group_name = { group_name, "string" },
-    nodes = { nodes, "table", true },
-    body = { body, "function", true },
-  })
   local tbl = {
     _name = name,
     _group_name = group_name,

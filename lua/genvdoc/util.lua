@@ -4,7 +4,6 @@ local M = {}
 --- @param file_path string: used for code block
 --- @param opts table|nil: default {language = nil}
 function M.help_code_block_from_file(file_path, opts)
-  vim.validate({ file_path = { file_path, "string" } })
   opts = opts or {}
   opts.include = opts.include or function(_)
     return true
@@ -36,8 +35,9 @@ function M.help_code_block(str, opts)
   return (">%s\n%s\n<"):format(opts.language, indented)
 end
 
+--- @param str string
+--- @param count integer
 function M.indent(str, count)
-  vim.validate({ str = { str, "string" }, count = { count, "number" } })
   local indent = (" "):rep(count)
   local lines = {}
   for _, line in ipairs(vim.split(str, "\n", { plain = true })) do
