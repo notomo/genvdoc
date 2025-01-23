@@ -19,9 +19,7 @@ function Modules.from_path(self, path)
     module_path = vim.fn.fnamemodify(path, ":r")
   end
 
-  local pattern = "^" .. vim.fs.normalize(self._dir_path):gsub("([^%w])", "%%%1") .. "%/"
-  local relative_path = vim.fs.normalize(module_path):gsub(pattern, "", 1)
-
+  local relative_path = vim.fs.relpath(self._dir_path, module_path) or module_path
   return table.concat(vim.split(relative_path, "/", { plain = true }), ".")
 end
 
