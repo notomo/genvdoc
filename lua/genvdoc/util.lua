@@ -138,7 +138,7 @@ function M.extract_variable_as_text(path, variable_name, opts)
   )
 
   local parser = vim.treesitter.get_string_parser(str, "lua")
-  local trees = parser:parse()
+  local trees = assert(parser:parse())
   local root = trees[1]:root()
   local _, match = query:iter_matches(root, str, 0, -1)()
 
@@ -183,7 +183,7 @@ function M.extract_documented_table(path)
   )
 
   local parser = vim.treesitter.get_string_parser(str, "lua")
-  local trees = parser:parse()
+  local trees = assert(parser:parse())
   local root = trees[1]:root()
 
   local list = {}

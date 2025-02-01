@@ -48,7 +48,7 @@ function M._parse(query, modules, path)
   end
 
   local parser = vim.treesitter.get_string_parser(str, "lua")
-  local trees, _ = parser:parse()
+  local trees, _ = assert(parser:parse())
 
   local module_name = modules:from_path(path)
   local iterator = require("genvdoc.collector.iterator").new(query:iter_captures(trees[1]:root(), str, 0, -1))
