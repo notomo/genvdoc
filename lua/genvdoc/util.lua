@@ -38,16 +38,7 @@ end
 --- @param str string
 --- @param count integer
 function M.indent(str, count)
-  local indent = (" "):rep(count)
-  local lines = {}
-  for _, line in ipairs(vim.split(str, "\n", { plain = true })) do
-    if line == "" then
-      table.insert(lines, line)
-    else
-      table.insert(lines, ("%s%s"):format(indent, line))
-    end
-  end
-  return table.concat(lines, "\n")
+  return vim.text.indent(count, str)
 end
 
 function M.help_tagged(ctx, name, tag_name)
