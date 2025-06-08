@@ -30,7 +30,6 @@ asserts.create("content"):register(function(self)
 
     local actual = args[2]
 
-    ---@diagnostic disable-next-line: missing-fields
     local diff = vim.diff(actual, expected, {})
 
     self:set_positive(("diff exists: actual(+), expected(-)\n%s"):format(diff))
