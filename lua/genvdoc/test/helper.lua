@@ -30,7 +30,7 @@ asserts.create("content"):register(function(self)
 
     local actual = args[2]
 
-    local diff = vim.diff(actual, expected, {})
+    local diff = vim.text.diff(actual, expected, {})
 
     self:set_positive(("diff exists: actual(+), expected(-)\n%s"):format(diff))
     self:set_negative("diff does not exists")
