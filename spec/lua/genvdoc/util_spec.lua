@@ -1,6 +1,8 @@
+local ntf = require("ntf")
+local describe, it, before_each, after_each = ntf.describe, ntf.it, ntf.before_each, ntf.after_each
 local helper = require("genvdoc.test.helper")
-local util = helper.require("genvdoc.util")
-local assert = helper.typed_assert(assert)
+local util = require("genvdoc.util")
+local assert = helper.typed_assert(ntf.assert)
 
 describe("genvdoc.util", function()
   before_each(helper.before_each)

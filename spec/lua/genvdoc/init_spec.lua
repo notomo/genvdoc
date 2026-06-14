@@ -1,6 +1,8 @@
+local ntf = require("ntf")
+local describe, it, before_each, after_each = ntf.describe, ntf.it, ntf.before_each, ntf.after_each
 local helper = require("genvdoc.test.helper")
-local genvdoc = helper.require("genvdoc")
-local assert = helper.typed_assert(assert)
+local genvdoc = require("genvdoc")
+local assert = helper.typed_assert(ntf.assert)
 
 local default_chapters = {
   {
