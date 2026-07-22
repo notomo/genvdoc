@@ -180,7 +180,11 @@ function M.extract_documented_table(path)
   local list = {}
   for _, match in query:iter_matches(root, str, 0, -1) do
     local extracted = require("genvdoc.vendor.misclib.treesitter").get_captures(match, query, function(tbl, key, node)
-      tbl[key] = vim.treesitter.get_node_text(node, str)
+      local text = vim.treesitter.get_node_text(node, str)
+      if key == "document" then
+        text = text:gsub("^%-%s*", "")
+      end
+      tbl[key] = text
     end)
     table.insert(list, extracted)
   end
