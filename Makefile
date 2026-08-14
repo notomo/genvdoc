@@ -1,3 +1,5 @@
+DEPS_SKIP_GENVDOC=1
+
 WORKFLOW_DIR ?= spec/.shared
 include $(WORKFLOW_DIR)/neovim-plugin.mk
 
