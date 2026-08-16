@@ -23,19 +23,24 @@ function M.build_lines(self, description_lines)
       return alias_value.name
     end)
     :totable()
-  local union = "= " .. table.concat(names, " | ")
+  local union = "= " .. (self._declaration.alias_type or table.concat(names, " | "))
+
+  local value_lines = vim
+    .iter(self._declaration.alias_values)
+    :filter(function(alias_value)
+      return alias_value.description ~= nil
+    end)
+    :map(function(alias_value)
+      return ("- %s: %s"):format(alias_value.name, alias_value.description)
+    end)
+    :totable()
 
   local lines = {}
   vim.list_extend(lines, add_indent(vim.deepcopy(description_lines), 2))
   vim.list_extend(lines, add_indent({ union }, 2))
-  table.insert(lines, "")
-
-  for _, alias_value in ipairs(self._declaration.alias_values) do
-    local line = ("- %s"):format(alias_value.name)
-    if alias_value.description then
-      line = line .. ": " .. alias_value.description
-    end
-    table.insert(lines, line)
+  if #value_lines > 0 then
+    table.insert(lines, "")
+    vim.list_extend(lines, value_lines)
   end
   return lines
 end

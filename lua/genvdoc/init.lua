@@ -28,7 +28,7 @@ local M = {}
 --- | '"function"' # has module function's params and returns
 --- | '"anonymous_function"' # same with "function" but does not have name
 --- | '"class"' # has class name and fields
---- | '"alias"' # has enum like union values
+--- | '"alias"' # has union values, each described where it is enum like
 
 ---Generate a document.
 ---@param plugin_name string: used for document name

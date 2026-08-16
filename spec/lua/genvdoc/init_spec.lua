@@ -59,6 +59,13 @@ end
 --- | '"value2"' # value2 description
 --- | '"value3"' # value3 description
 
+--- GenvdocInlineAlias description
+--- @alias GenvdocInlineAlias GenvdocAlias|fun(value:string):string|string[]
+
+--- @alias GenvdocTypeAlias
+--- | GenvdocAlias
+--- | string[]
+
 --- Inspect2.
 --- @param arg1 table: the first argument
 ---   param1 description
@@ -221,6 +228,13 @@ GenvdocAlias                                                    *GenvdocAlias*
 - "value1": value1 description
 - "value2": value2 description
 - "value3": value3 description
+
+GenvdocInlineAlias                                        *GenvdocInlineAlias*
+  GenvdocInlineAlias description
+  = GenvdocAlias|fun(value:string):string|string[]
+
+GenvdocTypeAlias                                            *GenvdocTypeAlias*
+  = GenvdocAlias | string[]
 
 ==============================================================================
 Function modules                                    *genvdoc-Function-modules*

@@ -96,6 +96,7 @@ function M._parse(query, modules, path)
         fields = {},
 
         -- type: alias
+        alias_type = nil,
         alias_values = {},
       },
     }
@@ -284,9 +285,11 @@ function M._search_declaration(ctx, result)
       end)
     end
 
-    local alias_name = parse_annotation("alias", comment)
-    if alias_name then
-      result.declaration.name = alias_name
+    local alias_line = parse_annotation("alias", comment)
+    if alias_line then
+      local name, inline_type = alias_line:match("^(%S+)%s+(.+)$")
+      result.declaration.name = name or alias_line
+      result.declaration.alias_type = inline_type
       result.declaration.type = "alias"
       return M._collect_alias_values(ctx, result, function(alias_value)
         table.insert(result.declaration.alias_values, alias_value)
@@ -388,12 +391,14 @@ function M._parse_declaration(ctx, result)
 end
 
 local parse_alias_value = function(line)
-  local name, description = line:match([[^| '([^']+)' # (.*)]])
-  if not name then
+  local body = line:match("^|%s*(.+)$")
+  if not body then
     return nil
   end
+  local value, description = body:match("^(.-)%s+#%s*(.*)$")
+  value = value or body
   return {
-    name = name,
+    name = value:match("^'(.*)'$") or value,
     description = description,
   }
 end
